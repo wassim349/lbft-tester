@@ -1,0 +1,15 @@
+# généré à chaque lancement
+build/
+trace.log
+
+# fichiers compilés
+*.o
+*.a
+*.dylib
+*.dSYM/
+
+# système / éditeurs
+.DS_Store
+.vscode/
+.idea/
+*.swp
