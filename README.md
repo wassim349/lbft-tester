@@ -7,7 +7,7 @@ Fait pour les postes Linux de 42, marche aussi sur Mac.
 ## Installer
 
 ```sh
-git clone <url-du-depot> ~/libft-tester
+git clone https://github.com/wassim349/lbft-tester.git ~/libft-tester
 ~/libft-tester/install.sh
 ```
 
