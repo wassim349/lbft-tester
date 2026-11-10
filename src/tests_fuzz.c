@@ -1,7 +1,7 @@
 /*
 ** Tests aleatoires : des milliers d'entrees au hasard, comparees a la libc
 ** (ou a une reference ecrite a la main). Ca trouve les cas auxquels personne
-** n'a pense. La graine est affichee : TESTER_SEED=<graine> rejoue la meme serie.
+** n'a pense. La graine est affichee : --seed <graine> rejoue la meme serie.
 */
 #include "framework.h"
 #include "available.h"
@@ -40,7 +40,7 @@ static int	rnd_int(void)
 }
 
 #define FAIL_SEED(...) do { t_fail(__VA_ARGS__); \
-	t_fail("graine %u : relance avec TESTER_SEED=%u pour rejouer", t_seed(), t_seed()); } while (0)
+	t_fail("graine %u : relance avec --seed %u pour rejouer", t_seed(), t_seed()); } while (0)
 
 void	fuzz_atoi(void)
 {
@@ -87,7 +87,7 @@ void	fuzz_strlcpy(void)
 			if (ra != rb || memcmp(a, b, sizeof(a)))
 			{
 				FAIL_SEED("ft_strlcpy(dst, %s, %zu) : retour %zu (attendu %zu)%s",
-					t_esc(src), size, ra, rb, memcmp(a, b, sizeof(a)) ? ", dst different" : "");
+					t_esc(src), size, ra, rb, memcmp(a, b, sizeof(a)) ? TR(", dst different") : "");
 				break ;
 			}
 		}
@@ -115,7 +115,7 @@ void	fuzz_strlcat(void)
 			{
 				FAIL_SEED("ft_strlcat(dst de longueur %zu, %s, %zu) : retour %zu (attendu %zu)%s",
 					strnlen(a, 64), t_esc(src), size, ra, rb,
-					memcmp(a, b, sizeof(a)) ? ", dst different" : "");
+					memcmp(a, b, sizeof(a)) ? TR(", dst different") : "");
 				break ;
 			}
 		}
@@ -166,7 +166,7 @@ void	fuzz_memmove(void)
 			if (r != a + d || memcmp(a, b, sizeof(a)))
 			{
 				FAIL_SEED("ft_memmove(buf+%d, buf+%d, %d) : %s", d, so, n,
-					r != a + d ? "ne renvoie pas dst" : "contenu different de memmove");
+					r != a + d ? TR("ne renvoie pas dst") : TR("contenu different de memmove"));
 				break ;
 			}
 		}
@@ -371,7 +371,7 @@ void	fuzz_split(void)
 			if (!g || i != n || g[n] != NULL)
 			{
 				FAIL_SEED("ft_split(%s, '%c') : attendu %zu mot(s), %s", t_esc(s), c, n,
-					!g ? "obtenu NULL" : i < n ? "mot different ou manquant" : "trop de mots (pas de NULL final ?)");
+					!g ? TR("obtenu NULL") : i < n ? TR("mot different ou manquant") : TR("trop de mots (pas de NULL final ?)"));
 				for (size_t j = 0; g && g[j] && j < 30; j++)
 					free(g[j]);
 				free(g);

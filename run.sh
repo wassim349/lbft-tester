@@ -11,7 +11,33 @@ HERE="$(cd "$(dirname "$SELF")" && pwd)"
 . "$HERE/scripts/common.sh"
 
 usage() {
-	cat <<EOF
+	if [ "$LANG_CODE" = en ]; then cat <<EOF
+${BOLD}libftest${RST} [options] [libft_folder] [functions...]
+
+  No folder: uses the current folder if it contains libft.h, else ../libft.
+
+  ${BOLD}Modes${RST}
+    (nothing)     submission checks + tests of every function
+    -q            tests only (no Makefile, README, libft.h...)
+    --asan        also catches silent memory errors (one byte overflow...)
+    --git         tests what is COMMITTED in git (like the moulinette), not your folder
+    --final       everything, strict, before you submit: --git + --asan + checks
+    --watch       reruns the tests every time you save a file (Ctrl+C to quit)
+
+  ${BOLD}Options${RST}
+    -v            show everything (every test, full table)
+    --seed N      replay the random tests with seed N
+    --lang        choose the language (menu), or --lang fr / --lang en
+    --no-color    no colors
+    --update      update the tester (git pull)
+    -h            this help
+
+  ${BOLD}Examples${RST}
+    libftest                      in your libft folder
+    libftest atoi split           only ft_atoi and ft_split
+    libftest --final ~/libft      before you submit
+EOF
+	else cat <<EOF
 ${BOLD}libftest${RST} [options] [dossier_libft] [fonctions...]
 
   Sans dossier : utilise le dossier courant s'il contient libft.h, sinon ../libft.
@@ -27,6 +53,7 @@ ${BOLD}libftest${RST} [options] [dossier_libft] [fonctions...]
   ${BOLD}Options${RST}
     -v            tout afficher (détail de chaque test, tableau complet)
     --seed N      rejoue les tests aléatoires avec la graine N
+    --lang        choisit la langue (menu), ou --lang fr / --lang en
     --no-color    sans couleurs
     --update      met le testeur à jour (git pull)
     -h            cette aide
@@ -36,6 +63,7 @@ ${BOLD}libftest${RST} [options] [dossier_libft] [fonctions...]
     libftest atoi split           seulement ft_atoi et ft_split
     libftest --final ~/libft      avant de rendre
 EOF
+	fi
 }
 
 # --- options
@@ -48,17 +76,34 @@ while [ $# -gt 0 ]; do
 		--git) GIT=1 ;;
 		--final) FINAL=1; GIT=1; ASAN=1; QUICK=0 ;;
 		--watch) WATCH=1 ;;
-		--seed) shift; SEED="$1" ;;
+		--seed)
+			shift
+			case "$1" in ''|*[!0-9]*) echo "${RED}$(msg '--seed attend un nombre (ex. --seed 42)')${RST}"; exit 2 ;; esac
+			SEED="$1" ;;
+		--lang)
+			case "${2:-}" in
+				fr|en) lang_save "$2"; LIBFTEST_LANG="$2"; lang_load
+					echo "   ${GRN}✔${RST} $(msg 'langue : français')"; exit 0 ;;
+				'') lang_menu || { echo "${RED}$(msg 'pas de terminal pour le menu : libftest --lang fr (ou en)')${RST}"; exit 2; }
+					exit 0 ;;
+				*) echo "${RED}$(msg 'langue inconnue : %s (fr ou en)' "$2")${RST}"; exit 2 ;;
+			esac ;;
 		--no-color) export TESTER_COLOR=0; . "$HERE/scripts/common.sh" ;;
 		--update)
-			if git -C "$HERE" pull --ff-only; then echo "${GRN}✔ testeur à jour${RST}"; exit 0
-			else echo "${RED}✘ mise à jour impossible (pas de dépôt distant, ou modifications locales)${RST}"; exit 1; fi ;;
+			if git -C "$HERE" pull --ff-only; then echo "${GRN}✔ $(msg 'testeur à jour')${RST}"; exit 0
+			else echo "${RED}✘ $(msg 'mise à jour impossible (pas de dépôt distant, ou modifications locales)')${RST}"; exit 1; fi ;;
 		-h|--help) usage; exit 0 ;;
-		-*) echo "${RED}option inconnue : $1${RST}"; usage; exit 2 ;;
+		-*) echo "${RED}$(msg 'option inconnue : %s' "$1")${RST}"; usage; exit 2 ;;
 		*) if [ -z "$LIBFT" ] && [ -d "$1" ]; then LIBFT="$1"; else FN+=("$1"); fi ;;
 	esac
 	shift
 done
+
+# 1er lancement dans un terminal : choisir la langue (une seule fois)
+if [ -z "${LIBFTEST_LANG_SET:-}" ] && [ ! -f "$LIBFTEST_CONF/lang" ] && [ -t 0 ] && [ -t 1 ] && [ $WATCH = 0 ]; then
+	lang_menu && echo
+fi
+export LIBFTEST_LANG_SET=1
 
 export ORIG_PWD="$PWD"
 is_libft() { [ -f "$1/libft.h" ] || ls "$1"/ft_*.c >/dev/null 2>&1; }
@@ -67,15 +112,15 @@ if [ -z "$LIBFT" ]; then
 	elif is_libft "$PWD/libft"; then LIBFT="$PWD/libft"
 	elif is_libft "$HERE/../libft"; then
 		LIBFT="$HERE/../libft"
-		echo "   ${YEL}! pas de libft dans ce dossier : je teste $(cd "$LIBFT" && pwd)${RST}"
+		echo "   ${YEL}! $(msg 'pas de libft dans ce dossier : je teste %s' "$(cd "$LIBFT" && pwd)")${RST}"
 	else
-		echo "${RED}Je ne trouve pas ta libft.${RST} Va dans ton dossier libft, ou donne son chemin :"
-		echo "   cd ~/chemin/vers/libft && libftest"
-		echo "   libftest ~/chemin/vers/libft"
+		echo "${RED}$(msg 'Je ne trouve pas ta libft.')${RST} $(msg 'Va dans ton dossier libft, ou donne son chemin :')"
+		echo "   cd $(msg '~/chemin/vers/libft') && libftest"
+		echo "   libftest $(msg '~/chemin/vers/libft')"
 		exit 1
 	fi
 elif ! is_libft "$LIBFT"; then
-	echo "${RED}$LIBFT ne ressemble pas à une libft${RST} (pas de libft.h ni de ft_*.c dedans)."
+	echo "${RED}$(msg '%s ne ressemble pas à une libft' "$LIBFT")${RST} $(msg '(pas de libft.h ni de ft_*.c dedans).')"
 	exit 1
 fi
 LIBFT="$(cd "$LIBFT" && pwd)"
@@ -89,12 +134,12 @@ for f in "${FN[@]}"; do
 		guess="$(while read -r g; do g="${g#ft_}"; [ "$(letters "$g")" = "$(letters "$short")" ] && echo "$g"; done < "$HERE/scripts/functions.txt")"
 		[ -z "$guess" ] && guess="$(grep -E "ft_.*(${short:0:3}|${short: -3})" "$HERE/scripts/functions.txt" | head -n 4 | sed 's/^ft_//')"
 		guess="$(echo $guess)"
-		echo "${RED}fonction inconnue : $f${RST}${guess:+   tu voulais dire : $guess}"
+		echo "${RED}$(msg 'fonction inconnue : %s' "$f")${RST}${guess:+   $(msg 'tu voulais dire : %s' "$guess")}"
 		bad=1
 	fi
 done
 if [ $bad = 1 ]; then
-	echo "${DIM}(si c'est un dossier, il n'existe pas)${RST}"
+	echo "${DIM}$(msg "(si c'est un dossier, il n'existe pas)")${RST}"
 	exit 2
 fi
 
@@ -107,6 +152,22 @@ renice -n 10 -p $$ >/dev/null 2>&1
 
 BUILD="$HERE/build/$(uname -s)-$(uname -m)"	# un dossier par systeme : pas de .o Mac utilises sous Linux
 mkdir -p "$BUILD"
+
+# un seul libftest a la fois par systeme (ex. --watch dans un terminal + libftest dans un autre) :
+# ils partagent build/, le 2e attend la fin du 1er. Verrou abandonne (process mort) : repris.
+LOCK="$BUILD/.lock"
+waited=0
+while ! mkdir "$LOCK" 2>/dev/null; do
+	owner="$(cat "$LOCK/pid" 2>/dev/null)"
+	if [ -n "$owner" ] && ! kill -0 "$owner" 2>/dev/null; then rm -rf "$LOCK"; continue; fi
+	if [ -z "$owner" ] && [ -n "$(find "$LOCK" -maxdepth 0 -mmin +10 2>/dev/null)" ]; then rm -rf "$LOCK"; continue; fi
+	[ $waited = 0 ] && echo "   ${YEL}… $(msg "un autre libftest tourne déjà : j'attends qu'il finisse")${RST}"
+	waited=$((waited + 1))
+	sleep 1
+done
+echo $$ > "$LOCK/pid"
+trap 'rm -rf "$LOCK"' EXIT
+trap 'rm -rf "$LOCK"; exit 130' INT TERM
 if [ $ASAN = 1 ]; then
 	# ASan doit compiler ET demarrer (sur certains macOS il se bloque au lancement)
 	asan_ok=0
@@ -118,59 +179,59 @@ if [ $ASAN = 1 ]; then
 		else wait $apid && asan_ok=1; fi
 	fi
 	if [ $asan_ok = 0 ]; then
-		echo "   ${YEL}! ASan ne fonctionne pas sur cette machine (il se bloque ou ne compile pas) : mode normal.${RST}"
-		echo "   ${DIM}  Sur les postes Linux de 42 il marche : lance --asan / --final là-bas.${RST}"
+		echo "   ${YEL}! $(msg 'ASan ne fonctionne pas sur cette machine (il se bloque ou ne compile pas) : mode normal.')${RST}"
+		echo "   ${DIM}  $(msg 'Sur les postes Linux de 42 il marche : lance --asan / --final là-bas.')${RST}"
 		ASAN=0
 	fi
 	rm -f "$BUILD/asan_check"
 fi
 OUT="$BUILD/normal"; [ $ASAN = 1 ] && OUT="$BUILD/asan"
 if [ $ASAN = 1 ] && [ "$(uname -s)" = Darwin ]; then
-	echo "   ${DIM}(sur Mac, en mode ASan, les fuites et les malloc qui échouent ne sont pas testés :"
-	echo "    le mode normal s'en charge. Sous Linux, tout est testé en même temps.)${RST}"
+	echo "   ${DIM}$(msg '(sur Mac, en mode ASan, les fuites et les malloc qui échouent ne sont pas testés :')"
+	echo "    $(msg "le mode normal s'en charge. Sous Linux, tout est testé en même temps.)")${RST}"
 fi
 mkdir -p "$OUT"
 
-mode="normal"; [ $QUICK = 1 ] && mode="tests seuls"; [ $ASAN = 1 ] && mode="$mode + ASan"
-[ $GIT = 1 ] && mode="$mode + git"; [ $FINAL = 1 ] && mode="FINAL (strict)"
+mode="$(msg 'normal')"; [ $QUICK = 1 ] && mode="$(msg 'tests seuls')"; [ $ASAN = 1 ] && mode="$mode + ASan"
+[ $GIT = 1 ] && mode="$mode + git"; [ $FINAL = 1 ] && mode="$(msg 'FINAL (strict)')"
 echo
-echo "   ${CYN}${BOLD}libft-tester${RST} ${DIM}· sujet v19.3 · $(uname -s)${RST}"
-echo "   ${DIM}libft :${RST} $(show_path "$LIBFT")   ${DIM}mode :${RST} $mode"
+echo "   ${CYN}${BOLD}libft-tester${RST} ${DIM}· $(msg 'sujet v19.3') · $(uname -s)${RST}"
+echo "   ${DIM}$(msg 'libft :')${RST} $(show_path "$LIBFT")   ${DIM}$(msg 'mode :')${RST} $mode"
 
 # ---------------------------------------------------------- 0. git
 GIT_KO=0
 if [ $GIT = 1 ]; then
 	echo
-	echo " ${CYN}${BOLD}▌ Dépôt git${RST}"
+	echo " ${CYN}${BOLD}▌ $(msg 'Dépôt git')${RST}"
 	echo
 	if ! git -C "$LIBFT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-		echo "   ${RED}✘ $LIBFT n'est pas un dépôt git : impossible de savoir ce que tu vas rendre${RST}"
+		echo "   ${RED}✘ $(msg "%s n'est pas un dépôt git : impossible de savoir ce que tu vas rendre" "$LIBFT")${RST}"
 		GIT_KO=1
 	else
 		dirty="$(git -C "$LIBFT" status --porcelain -- . 2>/dev/null)"
 		if [ -n "$dirty" ]; then
-			echo "   ${RED}✘ modifications pas commitées (la moulinette ne les verra pas) :${RST}"
+			echo "   ${RED}✘ $(msg 'modifications pas commitées (la moulinette ne les verra pas) :')${RST}"
 			echo "$dirty" | head -n 12 | sed 's/^/       /'
 			GIT_KO=1
 		else
-			echo "   ${GRN}✔${RST} tout est commité"
+			echo "   ${GRN}✔${RST} $(msg 'tout est commité')"
 		fi
 		ahead="$(git -C "$LIBFT" rev-list --count '@{u}..HEAD' 2>/dev/null)"
 		if [ -z "$ahead" ]; then
-			echo "   ${YEL}! pas de branche distante suivie : vérifie que tu push bien sur le dépôt de rendu${RST}"
+			echo "   ${YEL}! $(msg 'pas de branche distante suivie : vérifie que tu push bien sur le dépôt de rendu')${RST}"
 		elif [ "$ahead" -gt 0 ]; then
-			echo "   ${RED}✘ $ahead commit(s) pas encore push : fais git push${RST}"
+			echo "   ${RED}✘ $(msg '%s commit(s) pas encore push : fais git push' "$ahead")${RST}"
 			GIT_KO=1
 		else
-			echo "   ${GRN}✔${RST} tout est push ${DIM}(d'après le dernier fetch)${RST}"
+			echo "   ${GRN}✔${RST} $(msg 'tout est push') ${DIM}$(msg "(d'après le dernier fetch)")${RST}"
 		fi
 		rm -rf "${BUILD:?}/rendu"
 		if git clone -q "$LIBFT" "$BUILD/rendu" 2>/dev/null; then
-			echo "   ${DIM}→ je teste une copie propre du dernier commit (ce que la moulinette verra)${RST}"
+			echo "   ${DIM}→ $(msg 'je teste une copie propre du dernier commit (ce que la moulinette verra)')${RST}"
 			export TESTER_CLONE="$BUILD/rendu" TESTER_ORIG="$LIBFT"
 			LIBFT="$BUILD/rendu"
 		else
-			echo "   ${RED}✘ git clone a échoué : je teste ton dossier tel quel${RST}"
+			echo "   ${RED}✘ $(msg 'git clone a échoué : je teste ton dossier tel quel')${RST}"
 		fi
 	fi
 fi
@@ -190,8 +251,8 @@ rm -f "$OUT/results.txt"
 if [ -s "$OUT/compile_errors.txt" ]; then
 	n="$(wc -l < "$OUT/compile_errors.txt" | tr -d ' ')"
 	echo
-	echo "   ${YEL}! $n fichier(s) écarté(s) (ne compile pas, main() oublié...) : détail dans le bilan.${RST}"
-	echo "   ${DIM}  Je teste tous les autres.${RST}"
+	echo "   ${YEL}! $(msg '%s fichier(s) écarté(s) (ne compile pas, main() oublié...) : détail dans le bilan.' "$n")${RST}"
+	echo "   ${DIM}  $(msg 'Je teste tous les autres.')${RST}"
 fi
 
 # si libft.h a change (ou une autre libft), on recompile le testeur
@@ -202,14 +263,14 @@ fi
 
 TEST_RC=1
 if [ ! -f "$OUT/libft.a" ]; then
-	echo; echo "   ${RED}${BOLD}Aucun fichier ne compile : tests des fonctions annulés.${RST}"
+	echo; echo "   ${RED}${BOLD}$(msg 'Aucun fichier ne compile : tests des fonctions annulés.')${RST}"
 else
 	# ------------------------------------------------------------- 3. tests
 	bash "$HERE/scripts/gen_available.sh" "$LIBFT" "$OUT/libft.a" "$OUT/available.h"
 	if ! make -s -C "$HERE" LIBFT="$LIBFT" OUT="$OUT" ASAN=$ASAN > "$OUT/tester_build.log" 2>&1; then
-		echo; echo "   ${RED}${BOLD}Le testeur ne compile pas avec ta libft :${RST}"
+		echo; echo "   ${RED}${BOLD}$(msg 'Le testeur ne compile pas avec ta libft :')${RST}"
 		grep -E 'error|undefined|duplicate' "$OUT/tester_build.log" | head -n 10 | sed 's/^/     /'
-		echo "   ${DIM}(souvent : un prototype de libft.h différent du sujet, voir plus haut)${RST}"
+		echo "   ${DIM}$(msg '(souvent : un prototype de libft.h différent du sujet, voir plus haut)')${RST}"
 	else
 		echo
 		export TESTER_OUT="$OUT" TESTER_VERBOSE=$VERBOSE
@@ -224,26 +285,28 @@ else
 	fi
 fi
 cp "$OUT/trace.log" "$HERE/trace.log" 2>/dev/null
+[ -f "$OUT/trace.key" ] || : > "$OUT/trace.key"
 
 # ------------------------------------------------- 4. bilan
-TESTER_VERBOSE=$VERBOSE TESTER_STATE="$BUILD/state.txt" bash "$HERE/scripts/summary.sh" "$LIBFT" "$OUT" "${FN[@]}"
+TESTER_CHECK_KO="$CHECK_KO" TESTER_VERBOSE=$VERBOSE TESTER_STATE="$BUILD/state.txt" \
+	bash "$HERE/scripts/summary.sh" "$LIBFT" "$OUT" "${FN[@]}"
 SUM_RC=$?
 
 # ------------------------------------------------- 5. verdict
 echo
 if [ $SUM_RC = 0 ] && [ $TEST_RC = 0 ] && { [ "$CHECK_KO" = 0 ] || [ "$CHECK_KO" = "-" ]; } && [ $GIT_KO = 0 ]; then
 	if [ $FINAL = 1 ]; then
-		echo "   ${GRN}${BOLD}✅  PRÊT POUR LA MOULINETTE.${RST}"
-		echo "   ${DIM}   Dernier réflexe : vérifie sur l'intra que le dépôt de rendu contient bien ton dernier push.${RST}"
+		echo "   ${GRN}${BOLD}✅  $(msg 'PRÊT POUR LA MOULINETTE.')${RST}"
+		echo "   ${DIM}   $(msg "Dernier réflexe : vérifie sur l'intra que le dépôt de rendu contient bien ton dernier push.")${RST}"
 	elif [ ${#FN[@]} -gt 0 ]; then
-		echo "   ${GRN}${BOLD}✅  ${FN[*]} : tout est vert.${RST}"
+		echo "   ${GRN}${BOLD}✅  $(msg '%s : tout est vert.' "${FN[*]}")${RST}"
 	else
-		echo "   ${GRN}${BOLD}✅  Tout est vert.${RST} ${DIM}Avant de rendre : libftest --final${RST}"
+		echo "   ${GRN}${BOLD}✅  $(msg 'Tout est vert.')${RST} ${DIM}$(msg 'Avant de rendre : libftest --final')${RST}"
 	fi
 	exit 0
 fi
-[ "$CHECK_KO" != "-" ] && [ "$CHECK_KO" != 0 ] && echo "   ${RED}✘ vérifications du rendu : $CHECK_KO erreur(s), voir en haut${RST}"
-[ $GIT_KO = 1 ] && echo "   ${RED}✘ dépôt git : commit / push à faire, voir en haut${RST}"
-echo "   ${RED}${BOLD}❌  Pas encore prêt : corrige dans l'ordre de la liste « À corriger ».${RST}"
-echo "   ${DIM}   détail complet : $(show_path "$HERE/trace.log")${RST}"
+[ "$CHECK_KO" != "-" ] && [ "$CHECK_KO" != 0 ] && echo "   ${RED}✘ $(msg 'vérifications du rendu : %s erreur(s), voir en haut' "$CHECK_KO")${RST}"
+[ $GIT_KO = 1 ] && echo "   ${RED}✘ $(msg 'dépôt git : commit / push à faire, voir en haut')${RST}"
+echo "   ${RED}${BOLD}❌  $(msg "Pas encore prêt : corrige dans l'ordre de la liste « À corriger ».")${RST}"
+echo "   ${DIM}   $(msg 'détail complet : %s' "$(show_path "$HERE/trace.log")")${RST}"
 exit 1

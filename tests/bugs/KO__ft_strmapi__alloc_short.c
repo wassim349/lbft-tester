@@ -1,3 +1,4 @@
+/* conseil attendu : alloue strlen(s) + 1 et mets le '\0' */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

@@ -1,4 +1,5 @@
 #include "framework.h"
+#include <ctype.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <stdarg.h>
@@ -37,6 +38,7 @@ int			g_soft_next = 0;
 char		g_ko_names[2048] = "";
 char		g_missing_names[2048] = "";
 FILE		*g_trace = NULL;
+FILE		*g_trace_key = NULL;	/* meme trace, toujours en francais (pour les conseils) */
 FILE		*g_results = NULL;
 const char	*g_outdir = "build";
 
@@ -49,8 +51,10 @@ static int			g_s_leak;
 static int			g_s_wrong;
 static int			g_s_missing;
 static int			g_s_timeouts;
-static char			g_details[DETAILS_MAX];
+static char			g_details[DETAILS_MAX];		/* dans la langue choisie */
 static size_t		g_details_len;
+static char			g_details_key[DETAILS_MAX];	/* en francais */
+static size_t		g_details_key_len;
 
 /* etat cote fils */
 static int			g_child_fd = -1;
@@ -60,20 +64,158 @@ static int			g_child_nmsg;
 
 /* ------------------------------ affichage ----------------------------- */
 
+/* ---------------------------- traduction ---------------------------- */
+
+/*
+** Le texte francais sert de cle : TR("...") renvoie la traduction trouvee dans
+** le catalogue (lang/en.txt), ou le texte tel quel. Le catalogue est lu une fois
+** au demarrage, avant le premier fork.
+*/
+int			g_lang_en = 0;
+static char	**g_tr_key;
+static char	**g_tr_val;
+static int	g_tr_n;
+
+/* decode les echappements C d'une ligne du catalogue (\n, \", \310, \x80...) */
+static void	tr_unescape(char *s)
+{
+	char	*w = s;
+
+	while (*s)
+	{
+		if (*s != '\\' || !s[1])
+		{
+			*w++ = *s++;
+			continue ;
+		}
+		s++;
+		if (*s >= '0' && *s <= '7')
+		{
+			int	v = 0;
+
+			for (int k = 0; k < 3 && *s >= '0' && *s <= '7'; k++)
+				v = v * 8 + (*s++ - '0');
+			*w++ = (char)v;
+			continue ;
+		}
+		if (*s == 'x')
+		{
+			int	v = 0;
+			int	k = 0;
+
+			s++;
+			while (k++ < 2 && isxdigit((unsigned char)*s))
+			{
+				v = v * 16 + (isdigit((unsigned char)*s) ? *s - '0'
+						: tolower((unsigned char)*s) - 'a' + 10);
+				s++;
+			}
+			*w++ = (char)v;
+			continue ;
+		}
+		*w++ = *s == 'n' ? '\n' : *s == 't' ? '\t' : *s;
+		s++;
+	}
+	*w = '\0';
+}
+
+static char	*tr_dup_line(const char *line)
+{
+	size_t	n = strlen(line);
+	char	*d;
+
+	while (n && (line[n - 1] == '\n' || line[n - 1] == '\r'))
+		n--;
+	d = malloc(n + 1);
+	if (!d)
+		return (NULL);
+	memcpy(d, line, n);
+	d[n] = '\0';
+	tr_unescape(d);
+	return (d);
+}
+
+void	t_lang_init(void)
+{
+	const char	*lang = getenv("LIBFTEST_LANG");
+	const char	*path = getenv("TESTER_CATALOG");
+	char		line[4096];
+	char		*key = NULL;
+	FILE		*f;
+	int			cap = 0;
+
+	if (!lang || strcmp(lang, "en") != 0 || !path || !(f = fopen(path, "r")))
+		return ;
+	g_lang_en = 1;
+	while (fgets(line, sizeof(line), f))
+	{
+		if (strncmp(line, "fr: ", 4) == 0)
+		{
+			free(key);
+			key = tr_dup_line(line + 4);
+		}
+		else if (strncmp(line, "en: ", 4) == 0 && key)
+		{
+			if (g_tr_n == cap)
+			{
+				cap = cap ? cap * 2 : 256;
+				g_tr_key = realloc(g_tr_key, sizeof(char *) * (size_t)cap);
+				g_tr_val = realloc(g_tr_val, sizeof(char *) * (size_t)cap);
+				if (!g_tr_key || !g_tr_val)
+					break ;
+			}
+			g_tr_key[g_tr_n] = key;
+			g_tr_val[g_tr_n++] = tr_dup_line(line + 4);
+			key = NULL;
+		}
+	}
+	free(key);
+	fclose(f);
+}
+
+const char	*TR(const char *s)
+{
+	if (!g_lang_en || !s)
+		return (s);
+	for (int i = 0; i < g_tr_n; i++)
+		if (g_tr_val[i] && strcmp(g_tr_key[i], s) == 0)
+			return (g_tr_val[i]);
+	return (s);
+}
+
+/* ------------------------------ affichage ----------------------------- */
+
+static void	vadd(char *buf, size_t *len, const char *fmt, va_list ap)
+{
+	int	n;
+
+	if (*len >= DETAILS_MAX - 1)
+		return ;
+	n = vsnprintf(buf + *len, DETAILS_MAX - *len, fmt, ap);
+	if (n > 0)
+		*len += (size_t)n;
+	if (*len > DETAILS_MAX - 1)
+		*len = DETAILS_MAX - 1;
+}
+
+/* ajoute au detail affiche : fmt traduit */
 static void	details_add(const char *fmt, ...)
 {
 	va_list	ap;
-	int		n;
 
-	if (g_details_len >= DETAILS_MAX - 1)
-		return ;
 	va_start(ap, fmt);
-	n = vsnprintf(g_details + g_details_len, DETAILS_MAX - g_details_len, fmt, ap);
+	vadd(g_details, &g_details_len, TR(fmt), ap);
 	va_end(ap);
-	if (n > 0)
-		g_details_len += (size_t)n;
-	if (g_details_len > DETAILS_MAX - 1)
-		g_details_len = DETAILS_MAX - 1;
+}
+
+/* ajoute au detail en francais (trace.key) */
+static void	details_key(const char *fmt, ...)
+{
+	va_list	ap;
+
+	va_start(ap, fmt);
+	vadd(g_details_key, &g_details_key_len, fmt, ap);
+	va_end(ap);
 }
 
 /* ecrit s sans les codes couleur (pour trace.log) */
@@ -107,6 +249,8 @@ void	suite_begin(const char *name)
 	g_s_timeouts = 0;
 	g_details_len = 0;
 	g_details[0] = '\0';
+	g_details_key_len = 0;
+	g_details_key[0] = '\0';
 	printf("  " BOLD "%-17s" RST " ", name);
 	fflush(stdout);
 }
@@ -130,11 +274,13 @@ void	suite_end(void)
 {
 	if (g_s_missing)
 	{
-		printf(DIM "absente" RST "\n");
+		printf(DIM "%s" RST "\n", TR("absente"));
 		g_suites_missing++;
 		append_name(g_missing_names, g_suite);
 		if (g_trace)
-			fprintf(g_trace, "[ABSENTE] %s\n\n", g_suite);
+			fprintf(g_trace, "[%s] %s\n\n", TR("ABSENTE"), g_suite);
+		if (g_trace_key)
+			fprintf(g_trace_key, "[ABSENTE] %s\n\n", g_suite);
 		if (g_results)
 			fprintf(g_results, "%s ABSENTE 0 0 0 0 0 0\n", g_suite);
 		return ;
@@ -147,7 +293,8 @@ void	suite_end(void)
 	}
 	else
 	{
-		printf("  " GRN BOLD "OK" RST "%s\n", g_s_warn ? YEL " (avertissements)" RST : "");
+		printf("  " GRN BOLD "OK" RST "%s%s%s\n", g_s_warn ? YEL " " : "",
+			g_s_warn ? TR("(avertissements)") : "", g_s_warn ? RST : "");
 		g_suites_ok++;
 	}
 	if (g_verbose)
@@ -158,6 +305,12 @@ void	suite_end(void)
 		fputs_plain(g_details, g_trace);
 		fputc('\n', g_trace);
 	}
+	if (g_trace_key)
+	{
+		fprintf(g_trace_key, "[%s] %s\n", g_s_ko ? "KO" : "OK", g_suite);
+		fputs_plain(g_lang_en ? g_details_key : g_details, g_trace_key);
+		fputc('\n', g_trace_key);
+	}
 	if (g_results)
 		fprintf(g_results, "%s %s %d %d %d %d %d %d\n", g_suite, g_s_ko ? "KO" : "OK",
 			g_s_total - g_s_ko, g_s_total, g_s_crash, g_s_leak, g_s_wrong, g_s_warn);
@@ -166,7 +319,7 @@ void	suite_end(void)
 
 /* ---------------------------- cote fils ------------------------------ */
 
-static void	child_send(char tag, const char *fmt, va_list ap)
+static void	send_line(char tag, const char *fmt, va_list ap)
 {
 	char	buf[MSG_MAX];
 	int		n;
@@ -178,6 +331,31 @@ static void	child_send(char tag, const char *fmt, va_list ap)
 	n = (int)strlen(buf);
 	buf[n++] = '\n';
 	(void)!write(g_child_fd, buf, (size_t)n);
+}
+
+/*
+** Envoie le message au parent : 'F' (echec), 'W' (avertissement), 'N' (note),
+** dans la langue choisie. En anglais, suivi de la meme ligne en francais avec
+** le tag en minuscule ('f', 'w', 'n') : elle sert a trouver les conseils.
+*/
+static void	child_send(char tag, const char *fmt, va_list ap)
+{
+	va_list	ap2;
+
+	va_copy(ap2, ap);
+	send_line(tag, TR(fmt), ap);
+	if (g_lang_en)
+		send_line((char)(tag - 'A' + 'a'), fmt, ap2);
+	va_end(ap2);
+}
+
+static void	child_say(char tag, const char *fmt, ...)
+{
+	va_list	ap;
+
+	va_start(ap, fmt);
+	child_send(tag, fmt, ap);
+	va_end(ap);
 }
 
 void	t_fail(const char *fmt, ...)
@@ -235,15 +413,7 @@ void	t_end(void)
 	else if (!n && g_child_warn)
 		status = 'W';
 	if (n)
-	{
-		char	buf[256];
-		int		len;
-
-		len = snprintf(buf, sizeof(buf),
-			"Ffuite memoire : %zu bloc(s) jamais libere(s), %zu octet(s)\n",
-			n, bytes);
-		(void)!write(g_child_fd, buf, (size_t)len);
-	}
+		child_say('F', "fuite memoire : %zu bloc(s) jamais libere(s), %zu octet(s)", n, bytes);
 	{
 		char	end[3];
 
@@ -300,22 +470,22 @@ static void	print_mark(char status)
 static const char	*signal_desc(int sig)
 {
 	if (sig == SIGSEGV)
-		return ("SEGFAULT : acces memoire invalide");
+		return (N_("SEGFAULT : acces memoire invalide"));
 	if (sig == SIGBUS)
-		return ("BUS ERROR : acces memoire invalide");
+		return (N_("BUS ERROR : acces memoire invalide"));
 	if (sig == SIGABRT)
-		return ("ABORT : souvent un double free ou un free sur un mauvais pointeur");
+		return (N_("ABORT : souvent un double free ou un free sur un mauvais pointeur"));
 	if (sig == SIGALRM || sig == SIGXCPU)
-		return ("TIMEOUT : plus de 3 s, boucle infinie ?");
+		return (N_("TIMEOUT : plus de 3 s, boucle infinie ?"));
 	if (sig == SIGXFSZ)
-		return ("ecrit plus de 16 Mo : boucle infinie d'ecriture ?");
+		return (N_("ecrit plus de 16 Mo : boucle infinie d'ecriture ?"));
 	if (sig == SIGFPE)
-		return ("SIGFPE : division par zero ?");
-	return ("crash (signal inattendu)");
+		return (N_("SIGFPE : division par zero ?"));
+	return (N_("crash (signal inattendu)"));
 }
 
-/* lit le rapport ASan du fils : "heap-buffer-overflow ... dans ft_xxx ft_xxx.c:12" */
-static int	asan_summary(const char *path, char *out, size_t size)
+/* lit le rapport ASan du fils : type ("heap-buffer-overflow") et endroit ("ft_xxx ft_xxx.c:12") */
+static int	asan_summary(const char *path, char *kind_out, char *where, size_t size)
 {
 	char	buf[16384];
 	FILE	*f;
@@ -324,7 +494,8 @@ static int	asan_summary(const char *path, char *out, size_t size)
 	char	*frame;
 	char	*p;
 
-	out[0] = '\0';
+	kind_out[0] = '\0';
+	where[0] = '\0';
 	f = fopen(path, "r");
 	if (!f)
 		return (0);
@@ -338,38 +509,45 @@ static int	asan_summary(const char *path, char *out, size_t size)
 	p = kind;
 	while (*p && *p != ' ' && *p != '\n')
 		p++;
+	snprintf(kind_out, size, "%.*s", (int)(p - kind), kind);
 	frame = strstr(buf, " in ft_");
+	if (frame)
 	{
-		char	where[512];
+		size_t	i = 0;
 
-		where[0] = '\0';
-		if (frame)
+		frame += 4;
+		while (frame[i] && frame[i] != '\n' && i < size - 1)
 		{
-			size_t	i = 0;
-
-			frame += 4;
-			while (frame[i] && frame[i] != '\n' && i < sizeof(where) - 1)
-			{
-				where[i] = frame[i];
-				i++;
-			}
-			where[i] = '\0';
+			where[i] = frame[i];
+			i++;
 		}
-		snprintf(out, size, "ASan : %.*s%s%s", (int)(p - kind), kind,
-			where[0] ? " dans " : "", where);
+		where[i] = '\0';
 	}
 	return (1);
 }
 
-static void	record(const char *desc, int wstatus, char *out, int soft, const char *asan)
+/* ajoute "→ msg" au detail affiche (msg deja traduit) et/ou a la cle */
+static void	add_arrow(int to_key, const char *color, const char *msg)
+{
+	if (to_key)
+		details_key("         %s→" RST " %s\n", color, msg);
+	else
+		details_add("         %s→" RST " %s\n", color, msg);
+}
+
+static void	record(const char *desc, const char *desc_key, int wstatus, char *out,
+				int soft, const char *akind, const char *awhere)
 {
 	char	status;
 	char	*line;
 	char	*next;
 	char	last_note[MSG_MAX];
+	char	last_note_key[MSG_MAX];
+	int		sig;
 
 	status = 0;
 	last_note[0] = '\0';
+	last_note_key[0] = '\0';
 	line = out;
 	while (line && *line)
 	{
@@ -380,14 +558,17 @@ static void	record(const char *desc, int wstatus, char *out, int soft, const cha
 			status = line[1];
 		else if (line[0] == 'N')
 			snprintf(last_note, sizeof(last_note), "%s", line + 1);
+		else if (line[0] == 'n')
+			snprintf(last_note_key, sizeof(last_note_key), "%s", line + 1);
 		line = next;
 	}
-	if (asan[0])
+	if (!g_lang_en)
+		memcpy(last_note_key, last_note, sizeof(last_note));
+	sig = WIFSIGNALED(wstatus) ? WTERMSIG(wstatus) : 0;
+	if (akind[0])
 		status = 'A';
-	else if (WIFSIGNALED(wstatus))
+	else if (sig)
 	{
-		int	sig = WTERMSIG(wstatus);
-
 		status = (sig == SIGALRM || sig == SIGXCPU) ? 'T' : 'S';
 		if (status == 'T')
 			g_s_timeouts++;
@@ -413,33 +594,61 @@ static void	record(const char *desc, int wstatus, char *out, int soft, const cha
 	print_mark(status);
 	if (status == 'O')
 		return ;
-	details_add("     %s%s" RST " %s\n",
-		status == 'W' ? YEL : RED, status == 'W' ? "!" : "✘", desc);
-	line = out;
-	while (line && *line)
+	/* 2 passes : k = 0 detail affiche, k = 1 detail en francais (seulement en anglais) */
+	for (int k = 0; k <= g_lang_en; k++)
 	{
-		if (line[0] == 'F')
-			details_add("         %s→" RST " %s\n", soft ? YEL : RED, line + 1);
-		else if (line[0] == 'W')
-			details_add("         " YEL "→" RST " %s\n", line + 1);
-		line += strlen(line) + 1;
+		const char	*red = soft ? YEL : RED;
+		const char	*mark = status == 'W' ? "!" : "✘";
+		const char	*mcol = status == 'W' ? YEL : RED;
+		char		tmp[MSG_MAX];
+		int			kfr = k || !g_lang_en;	/* textes en francais pour cette passe */
+
+		if (k)
+			details_key("     %s%s" RST " %s\n", mcol, mark, desc_key);
+		else
+			details_add("     %s%s" RST " %s\n", mcol, mark, desc);
+		for (line = out; line && *line; line += strlen(line) + 1)
+		{
+			char	want_f = k ? 'f' : 'F';
+			char	want_w = k ? 'w' : 'W';
+
+			if (line[0] == want_f)
+				add_arrow(k, red, line + 1);
+			else if (line[0] == want_w)
+				add_arrow(k, YEL, line + 1);
+		}
+		if (akind[0])
+		{
+			if (awhere[0])
+				snprintf(tmp, sizeof(tmp), kfr ? "ASan : %s dans %s" : TR("ASan : %s dans %s"),
+					akind, awhere);
+			else
+				snprintf(tmp, sizeof(tmp), "ASan : %s", akind);
+			add_arrow(k, MAG, tmp);
+		}
+		else if (sig)
+			add_arrow(k, MAG, kfr ? signal_desc(sig) : TR(signal_desc(sig)));
+		else if (!strchr("OWKL", status) && !soft)
+			add_arrow(k, RED, kfr ? "le test s'est arrete sans resultat (exit dans ta fonction ?)"
+				: TR("le test s'est arrete sans resultat (exit dans ta fonction ?)"));
+		if ((akind[0] || sig) && (k ? last_note_key : last_note)[0])
+		{
+			snprintf(tmp, sizeof(tmp), kfr ? "pendant : %s" : TR("pendant : %s"),
+				k ? last_note_key : last_note);
+			add_arrow(k, MAG, tmp);
+		}
 	}
-	if (asan[0])
-		details_add("         " MAG "→ %s" RST "\n", asan);
-	else if (WIFSIGNALED(wstatus))
-		details_add("         " MAG "→ %s" RST "\n", signal_desc(WTERMSIG(wstatus)));
-	else if (!strchr("OWKL", status) && !soft)
-		details_add("         " RED "→ le test s'est arrete sans resultat (exit dans ta fonction ?)" RST "\n");
-	if ((asan[0] || WIFSIGNALED(wstatus)) && last_note[0])
-		details_add("         " MAG "→ pendant : %s" RST "\n", last_note);
 }
 
 int	t_begin(const char *fmt, ...)
 {
 	char	desc[1024];
+	char	desc_key[1024];
 	char	asan_log[1024];
-	char	asan[1024];
+	char	akind[256];
+	char	awhere[512];
 	va_list	ap;
+	va_list	ap2;
 	int		fds[2];
 	pid_t	pid;
 	char	out[65536];
@@ -459,17 +668,26 @@ int	t_begin(const char *fmt, ...)
 		g_s_crash++;
 		printf(DIM "T" RST);
 		if (g_s_timeouts++ == 2)
-			details_add("     " RED "✘" RST " tests suivants sautes : la fonction boucle deja a l'infini\n");
+		{
+			details_add("     " RED "✘" RST " %s\n", TR("tests suivants sautes : la fonction boucle deja a l'infini"));
+			details_key("     " RED "✘" RST " %s\n", "tests suivants sautes : la fonction boucle deja a l'infini");
+		}
 		return (0);
 	}
 	va_start(ap, fmt);
-	vsnprintf(desc, sizeof(desc), fmt, ap);
+	va_copy(ap2, ap);
+	vsnprintf(desc, sizeof(desc), TR(fmt), ap);
+	vsnprintf(desc_key, sizeof(desc_key), fmt, ap2);
+	va_end(ap2);
 	va_end(ap);
 	snprintf(asan_log, sizeof(asan_log), "%s/asan.log", g_outdir);
-	asan[0] = '\0';
+	akind[0] = '\0';
+	awhere[0] = '\0';
 	fflush(stdout);
 	if (g_trace)
 		fflush(g_trace);
+	if (g_trace_key)
+		fflush(g_trace_key);
 	if (g_results)
 		fflush(g_results);
 	if (pipe(fds) < 0)
@@ -508,8 +726,8 @@ int	t_begin(const char *fmt, ...)
 	close(fds[0]);
 	waitpid(pid, &wstatus, 0);
 	if (T_ASAN && !strstr(out, "\nR") && out[0] != 'R')
-		asan_summary(asan_log, asan, sizeof(asan));
-	record(desc, wstatus, out, soft, asan);
+		asan_summary(asan_log, akind, awhere, sizeof(akind));
+	record(desc, desc_key, wstatus, out, soft, akind, awhere);
 	return (0);
 }
 
@@ -603,7 +821,7 @@ const char	*t_ptr(const void *p, const void *base, size_t len, const char *name)
 		snprintf(b, 128, "%s+%td", name,
 			(const char *)p - (const char *)base);
 	else
-		snprintf(b, 128, "%p (en dehors de %s !)", p, name);
+		snprintf(b, 128, TR("%p (en dehors de %s !)"), p, name);
 	return (b);
 }
 

@@ -1,3 +1,4 @@
+/* conseil attendu : ça plante quand malloc renvoie NULL */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

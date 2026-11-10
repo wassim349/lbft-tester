@@ -1,3 +1,4 @@
+/* conseil attendu : vérifie le débordement avant malloc */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

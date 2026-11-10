@@ -1,3 +1,4 @@
+/* conseil attendu : ta boucle n'avance pas */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

@@ -19,7 +19,7 @@ static void	test_ctype(const char *name, int (*ft)(int), int (*ref)(int), int st
 			if ((ft(c) != 0) != (ref(c) != 0))
 			{
 				t_fail("%s(%d) %s : attendu %s, obtenu %d", name, c,
-					t_escn((char[]){(char)c, 0}, 1), ref(c) ? "vrai" : "faux (0)", ft(c));
+					t_escn((char[]){(char)c, 0}, 1), ref(c) ? TR("vrai") : TR("faux (0)"), ft(c));
 				break ;
 			}
 	}
@@ -32,7 +32,7 @@ static void	test_ctype(const char *name, int (*ft)(int), int (*ref)(int), int st
 			if ((ft(c) != 0) != (ref(c) != 0))
 			{
 				t_fail("%s(%d) : attendu %s, obtenu %d", name, c,
-					ref(c) ? "vrai" : "faux (0)", ft(c));
+					ref(c) ? TR("vrai") : TR("faux (0)"), ft(c));
 				break ;
 			}
 		}
@@ -513,7 +513,7 @@ void	suite_atoi(void)
 	const char	*c[] = {
 		"42", "-42", "+42", "0", "-0", "00042", "   42", "\t\n\v\f\r 42",
 		"--42", "+-42", "-+42", "++42", " - 42", "42abc", "4 2", "abc42", "",
-		"2147483647", "-2147483648", "  +2147483647xyz", "\200 42", "\033" "42", "-", "+", "  -0", "-+0",
+		"2147483647", "-2147483648", "  +2147483647xyz", "\200 42", ("\033" "42"), "-", "+", "  -0", "-+0",
 	};
 
 	for (size_t i = 0; i < sizeof(c) / sizeof(*c); i++)

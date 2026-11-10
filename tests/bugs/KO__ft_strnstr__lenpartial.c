@@ -1,3 +1,4 @@
+/* conseil attendu : ne lis jamais au-delà de len */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

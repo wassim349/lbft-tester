@@ -1,3 +1,4 @@
+/* conseil attendu : c est converti en unsigned char et chaque octet */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

@@ -10,16 +10,16 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 STAMP="$HERE/../build/.watch_stamp"
 mkdir -p "$HERE/../build"
 
-trap 'echo; echo "   ${DIM}fin du mode watch${RST}"; rm -f "$STAMP"; exit 0' INT TERM
+trap 'echo; echo "   ${DIM}$(msg "fin du mode watch")${RST}"; rm -f "$STAMP"; exit 0' INT TERM
 
 clear_screen() { [ -t 1 ] && printf '\033[H\033[2J'; }
 
 run() {
 	clear_screen
-	echo "   ${DIM}$(date +%H:%M:%S) · mode watch · Ctrl+C pour quitter${RST}"
+	echo "   ${DIM}$(date +%H:%M:%S) · $(msg 'mode watch · Ctrl+C pour quitter')${RST}"
 	bash "$RUN" -q "$LIBFT" "$@"
 	echo
-	echo "   ${CYN}… en attente de modifications dans $(show_path "$LIBFT")${RST}"
+	echo "   ${CYN}… $(msg 'en attente de modifications dans %s' "$(show_path "$LIBFT")")${RST}"
 }
 
 touch "$STAMP"

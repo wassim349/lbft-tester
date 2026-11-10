@@ -1,3 +1,4 @@
+/* conseil attendu : compte les mots en sautant */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

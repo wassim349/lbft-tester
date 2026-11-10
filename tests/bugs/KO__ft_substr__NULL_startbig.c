@@ -1,3 +1,4 @@
+/* conseil attendu : renvoie une chaîne vide allouée */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

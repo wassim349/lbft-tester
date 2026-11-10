@@ -177,7 +177,7 @@ void	suite_lstadd_front(void)
 			g_vals[i] = i;
 			ft_lstadd_front(&lst, mk(&g_vals[i]));
 		}
-		list_matches(lst, exp, 3, "liste");
+		list_matches(lst, exp, 3, TR("liste"));
 		free_nodes(lst);
 	}
 #else
@@ -283,7 +283,7 @@ void	suite_lstadd_back(void)
 			exp[i] = i;
 			ft_lstadd_back(&lst, mk(&g_vals[i]));
 		}
-		list_matches(lst, exp, 100, "liste");
+		list_matches(lst, exp, 100, TR("liste"));
 		free_nodes(lst);
 	}
 #ifdef HAS_ft_lstadd_front
@@ -517,10 +517,10 @@ void	suite_lstmap(void)
 		m = ft_lstmap(l, f_map_double, del_count);
 		CHECK(m != NULL, "renvoie NULL");
 		if (m)
-			list_matches(m, exp, 50, "nouvelle liste");
+			list_matches(m, exp, 50, TR("nouvelle liste"));
 		for (int i = 0; i < 50; i++)
 			exp[i] = i;
-		list_matches(l, exp, 50, "liste d'origine");
+		list_matches(l, exp, 50, TR("liste d'origine"));
 		CHECK(g_del_calls == 0, "del appelee %d fois alors que tout a reussi", g_del_calls);
 		free_mapped(m);
 		free_nodes(l);

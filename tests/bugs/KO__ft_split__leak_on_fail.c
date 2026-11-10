@@ -1,3 +1,4 @@
+/* conseil attendu : quand un malloc échoue au milieu */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

@@ -49,11 +49,15 @@ $(OUT)/libfthook.dylib: src/hook.c src/hook.h
 $(OUT)/tester: $(OBJS) $(OUT)/libft.a $(HOOK)
 	@$(CC) $(LDFLAGS) $(OBJS) $(OUT)/libft.a $(LINK) -o $@
 
-# verifie que le testeur detecte toujours les bugs de tests/bugs
+# verifie que le testeur detecte toujours les bugs de tests/bugs (et les traductions)
 selftest:
 	@bash scripts/selftest.sh
+
+# verifie que tous les textes ont leur traduction anglaise (lang/en.txt, scripts/hints.txt)
+i18n:
+	@python3 scripts/i18n_check.py
 
 clean:
 	rm -rf build trace.log
 
-.PHONY: all clean selftest
+.PHONY: all clean selftest i18n

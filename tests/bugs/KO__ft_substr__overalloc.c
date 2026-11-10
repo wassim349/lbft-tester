@@ -1,3 +1,4 @@
+/* conseil attendu : Limite d'abord len à strlen(s + start) */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

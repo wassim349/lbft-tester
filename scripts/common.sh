@@ -30,9 +30,12 @@ show_path() {
 	local f="$1"
 	# en mode --git on teste une copie : on affiche le chemin de ton vrai fichier
 	if [ -n "${TESTER_CLONE:-}" ] && [ "${f#"$TESTER_CLONE"}" != "$f" ]; then f="$TESTER_ORIG${f#"$TESTER_CLONE"}"; fi
-	if [ -n "${ORIG_PWD:-}" ] && [ "$f" = "$ORIG_PWD" ]; then echo "ce dossier"
+	if [ -n "${ORIG_PWD:-}" ] && [ "$f" = "$ORIG_PWD" ]; then msg 'ce dossier'; echo
 	elif [ -n "${ORIG_PWD:-}" ] && [ "${f#"$ORIG_PWD"/}" != "$f" ]; then echo "${f#"$ORIG_PWD"/}"
 	else echo "$f"; fi
 }
 
 strip_colors() { perl -pe 's/\e\[[0-9;]*m//g'; }
+
+# Langue (msg, LANG_CODE, lang_menu) : voir i18n.sh
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/i18n.sh"

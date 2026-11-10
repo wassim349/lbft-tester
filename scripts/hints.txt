@@ -1,0 +1,168 @@
+# Conseils affiches sous les erreurs du bilan (💡).
+#
+# Format : <fonctions><TAB><regex><TAB><conseil FR><TAB><conseil EN>   (une ou plusieurs tabulations)
+#   fonctions : regex sur le nom (ex. ft_atoi, ft_is(alpha|print)), ou * pour toutes
+#   regex     : regex etendue (awk), testee sur chaque erreur de la fonction, mise sur une ligne,
+#               TOUJOURS EN FRANCAIS (trace.key), quelle que soit la langue affichee :
+#                 "TEST ft_atoi("-42") → retour attendu -42, obtenu 0"     (test raté)
+#                 "COMPIL ne compile pas : ft_x.c:12:3: error: ..."         (fichier écarté)
+#                 "PROTO type" / "PROTO const"                            (prototype du .c)
+#                 "NORM SPACE_BEFORE_FUNC message"                        (norminette)
+#               ecrire \\x80 pour un \x80 litteral, \( pour une parenthese
+#   conseil   : une phrase, ce qu'il faut faire. Pas de tabulation dedans.
+#   Une regle propre a une fonction (pas *) ne s'applique qu'aux lignes TEST (et PROTO si sa regex
+#   commence par ^PROTO). Les conseils de norme ne sont affiches qu'une fois dans tout le bilan.
+#
+# La premiere regle qui correspond gagne : les regles precises d'abord, les generales a la fin.
+# Apres une modification : make i18n (verifie la colonne anglaise et les regex) puis make selftest.
+
+# ------------------------------------------------------------ prototypes
+ft_is(alpha|digit|alnum|ascii|print)	^PROTO type	ces fonctions reçoivent UN caractère (int c), pas une chaîne : pas de boucle, juste un test sur c, ex. return (c >= 32 && c <= 126); Mets aussi #include "libft.h" dans le .c, pour que le compilateur voie l'erreur.	these functions get ONE character (int c), not a string: no loop, just a test on c, e.g. return (c >= 32 && c <= 126); Also put #include "libft.h" in the .c, so the compiler sees the mistake.
+ft_(strlcpy|strlcat|strncmp|memset|memcpy|memmove|memchr|memcmp|strnstr|bzero|calloc)	^PROTO type	les tailles sont des size_t (pas des int ni des unsigned int) : copie le prototype du sujet tel quel, et mets #include "libft.h" dans le .c.	sizes are size_t (not int nor unsigned int): copy the subject's prototype as it is, and put #include "libft.h" in the .c.
+*	^PROTO type	la moulinette appelle ta fonction avec les types du sujet : avec un autre prototype elle reçoit n'importe quoi. Copie le prototype du sujet, et mets #include "libft.h" dans le .c pour que le compilateur te prévienne.	the moulinette calls your function with the subject's types: with another prototype it gets garbage. Copy the subject's prototype, and put #include "libft.h" in the .c so the compiler warns you.
+
+# ------------------------------------------------------------ compilation
+*	'(stddef|stdlib|unistd|stdio|string|limits|stdint)' file not found|file not found.*'(stddef|stdlib|unistd|stdio|string|limits|stdint)'	il manque le .h : écris #include <stddef.h> (et pas <stddef>).	the .h is missing: write #include <stddef.h> (not <stddef>).
+*	'libft' file not found	il manque le .h : écris #include "libft.h".	the .h is missing: write #include "libft.h".
+*	file not found	vérifie le nom du fichier inclus ; pour ta libft : #include "libft.h", avec des guillemets.	check the name of the included file; for your libft: #include "libft.h", with double quotes.
+*	(undeclared (library )?function|implicit declaration of function) .retrun	faute de frappe : c'est return, pas retrun.	typo: it is return, not retrun.
+*	(undeclared (library )?function|implicit declaration of function) .(malloc|free)	malloc et free sont déclarées dans <stdlib.h> : ajoute-le dans libft.h, et #include "libft.h" dans le .c.	malloc and free are declared in <stdlib.h>: add it to libft.h, and #include "libft.h" in the .c.
+*	(undeclared (library )?function|implicit declaration of function) .write	write est déclarée dans <unistd.h> : ajoute-le dans libft.h, et #include "libft.h" dans le .c.	write is declared in <unistd.h>: add it to libft.h, and #include "libft.h" in the .c.
+*	(undeclared (library )?function|implicit declaration of function) .ft_	cette fonction ft_ n'est pas déclarée là où tu l'appelles : mets #include "libft.h" en haut du .c (et son prototype dans libft.h).	this ft_ function is not declared where you call it: put #include "libft.h" at the top of the .c (and its prototype in libft.h).
+*	(undeclared (library )?function|implicit declaration of function)	fonction inconnue à cet endroit : faute de frappe, ou include manquant en haut du fichier.	unknown function at this point: typo, or missing include at the top of the file.
+*	ne contient pas la fonction	le fichier ft_xxx.c doit définir la fonction ft_xxx, avec le prototype du sujet (attention : les exercices de la piscine ne font pas exactement la même chose).	the file ft_xxx.c must define the function ft_xxx, with the subject's prototype (careful: the piscine exercises don't do exactly the same thing).
+*	n'est pas declaree dans libft.h	ajoute son prototype (celui du sujet) dans libft.h.	add its prototype (the subject's one) to libft.h.
+*	unknown type name 'size_t'|undeclared identifier 'NULL'|'NULL' undeclared|unknown type name .size_t	size_t et NULL viennent de <stddef.h> : mets #include "libft.h" en haut du .c (libft.h inclut <stddef.h>).	size_t and NULL come from <stddef.h>: put #include "libft.h" at the top of the .c (libft.h includes <stddef.h>).
+*	unknown type name 't_list'|unknown type name .t_list	t_list doit être définie dans libft.h, et le .c doit faire #include "libft.h".	t_list must be defined in libft.h, and the .c must #include "libft.h".
+*	pointer to integer conversion|integer from pointer	tu ranges un pointeur dans un char/int : il manque sûrement une * ou un [i] (ex. *dst = c, ou tab[i] = mot).	you store a pointer in a char/int: a * or an [i] is probably missing (e.g. *dst = c, or tab[i] = word).
+*	integer to pointer conversion|pointer from integer	tu ranges un nombre/char dans un pointeur : il manque sûrement une * ou un [i] du côté gauche.	you store a number/char in a pointer: a * or an [i] is probably missing on the left side.
+*	undeclared identifier|undeclared \(first use	ce nom n'existe pas à cet endroit : variable pas déclarée, faute de frappe, ou paramètre qui porte un autre nom.	this name does not exist here: undeclared variable, typo, or a parameter with another name.
+*	unused variable	-Werror transforme l'avertissement en erreur : supprime la variable inutilisée.	-Werror turns the warning into an error: remove the unused variable.
+*	unused parameter	paramètre jamais utilisé : supprime-le si le sujet le permet, sinon écris (void)nom; dans la fonction.	parameter never used: remove it if the subject allows it, otherwise write (void)name; in the function.
+*	different signs|signed and unsigned	-Wextra refuse de comparer int et size_t : déclare ton compteur en size_t.	-Wextra refuses to compare int and size_t: declare your counter as size_t.
+*	does not return a value|control reaches end|non-void function	un chemin de ta fonction arrive à la fin sans return : ajoute le return manquant.	one path of your function reaches the end without a return: add the missing return.
+*	expected ';'	point-virgule oublié (souvent à la fin de la ligne d'AVANT celle indiquée).	missing semicolon (often at the end of the line BEFORE the one shown).
+*	expected '\}'|expected '\)'|extraneous closing brace	accolades ou parenthèses mal équilibrées : regarde un peu avant la ligne indiquée.	unbalanced braces or parentheses: look a bit before the line shown.
+*	conflicting types	le prototype de ton .c n'est pas le même que celui de libft.h : copie celui du sujet aux deux endroits.	the prototype in your .c is not the same as in libft.h: copy the subject's one in both places.
+*	redefinition of	la même fonction est écrite deux fois (ou ton .c inclut un autre .c) : n'inclus que des .h.	the same function is written twice (or your .c includes another .c): only include .h files.
+*	contient un main\(\)	supprime le main (même en commentaire c'est risqué) : garde tes essais dans un main.c à part, hors du rendu.	remove the main (even commented out it is risky): keep your tries in a separate main.c, outside the submission.
+*	definit aussi	une fonction ne doit exister que dans son fichier : appelle-la (elle est dans libft.h) au lieu de la recopier, ou mets la copie en static.	a function must only exist in its own file: call it (it is in libft.h) instead of copying it, or make the copy static.
+*	utilise ft_[a-z_]+, qui ne compile pas	ce fichier dépend d'une autre fonction : corrige d'abord celle-là, celui-ci suivra.	this file depends on another function: fix that one first, this one will follow.
+
+# ------------------------------------------------------------ partie 1
+ft_is(alpha|digit|alnum|ascii|print)	128 a 255 et EOF	pour c >= 128 et pour -1 (EOF) il faut renvoyer 0 : compare c directement, sans le caster en char.	for c >= 128 and for -1 (EOF) you must return 0: compare c directly, without casting it to char.
+ft_(toupper|tolower)	.	seules les lettres changent ('a' - 32 == 'A') : tout le reste, y compris >= 128 et EOF, est renvoyé tel quel.	only letters change ('a' - 32 == 'A'): everything else, including >= 128 and EOF, is returned as it is.
+ft_strlen	TIMEOUT	ta boucle n'avance pas : il faut i++ à chaque tour, et s'arrêter sur s[i] == '\0'.	your loop does not move forward: you need i++ on every turn, and to stop on s[i] == '\0'.
+ft_memset	300 → 44	c est converti en unsigned char avant d'être écrit : ((unsigned char *)s)[i] = (unsigned char)c;	c is converted to unsigned char before being written: ((unsigned char *)s)[i] = (unsigned char)c;
+ft_(memset|bzero|memcpy|memmove)	ne touche a rien	avec n == 0 on ne touche à aucun octet : la boucle doit être while (i < n), testée AVANT d'écrire.	with n == 0 no byte is touched: the loop must be while (i < n), checked BEFORE writing.
+ft_(memset|memcpy|memmove)	renvoie	renvoie le pointeur reçu (s ou dst) tel qu'il était au départ, pas un pointeur avancé.	return the received pointer (s or dst) as it was at the start, not a moved pointer.
+ft_memcpy	\\0	memcpy copie exactement n octets, \0 compris : ne t'arrête pas sur '\0', c'est pas strcpy.	memcpy copies exactly n bytes, \0 included: don't stop on '\0', it is not strcpy.
+ft_memmove	dst apres src	quand dst > src les zones se chevauchent : copie de la fin vers le début (i = n; while (i-- > 0)).	when dst > src the areas overlap: copy from the end to the start (i = n; while (i-- > 0)).
+ft_memmove	dst avant src	quand dst < src, copie du début vers la fin (comme memcpy).	when dst < src, copy from the start to the end (like memcpy).
+ft_strlcpy	\(dst\[12\], .*, 0\)	avec size == 0 on n'écrit rien du tout dans dst, mais on renvoie quand même strlen(src).	with size == 0 nothing at all is written in dst, but strlen(src) is still returned.
+ft_strlcpy	retour attendu|retour [0-9]+ \(attendu	strlcpy renvoie TOUJOURS strlen(src), même si tout n'a pas été copié.	strlcpy ALWAYS returns strlen(src), even if not everything was copied.
+ft_strlcpy	.	copie au plus size - 1 caractères, puis mets toujours un '\0' (si size > 0).	copy at most size - 1 characters, then always put a '\0' (if size > 0).
+ft_strlcat	retour attendu|retour [0-9]+ \(attendu	strlcat renvoie strlen(src) + le plus petit entre size et strlen(dst) de départ.	strlcat returns strlen(src) + the smaller of size and the starting strlen(dst).
+ft_strlcat	.	n'écris jamais plus de size octets au total dans dst (en comptant ce qui y est déjà), '\0' compris.	never write more than size bytes in total in dst (counting what is already there), '\0' included.
+ft_(strchr|strrchr)	, (2[5-9][0-9]|[3-9][0-9][0-9]|[0-9][0-9][0-9][0-9]+|-[0-9]+)\)	c doit être converti en char avant la comparaison : s[i] == (char)c (sinon 'a' + 256 n'est jamais trouvé).	c must be converted to char before comparing: s[i] == (char)c (otherwise 'a' + 256 is never found).
+ft_(strchr|strrchr)	'\\0'|, 0\)	le '\0' final fait partie de la chaîne : chercher '\0' doit renvoyer un pointeur sur lui, pas NULL.	the final '\0' is part of the string: looking for '\0' must return a pointer to it, not NULL.
+ft_strrchr	.	strrchr renvoie la DERNIÈRE occurrence : retiens la position trouvée et continue jusqu'au '\0'.	strrchr returns the LAST occurrence: remember the position found and keep going until '\0'.
+ft_(strncmp|memcmp)	^TEST [^→]*\\x[89a-fA-F]	compare en unsigned char : return ((unsigned char)s1[i] - (unsigned char)s2[i]); (un char signé rend \x80 négatif).	compare as unsigned char: return ((unsigned char)s1[i] - (unsigned char)s2[i]); (a signed char makes \x80 negative).
+ft_(strncmp|memcmp)	attendu [1-9][0-9]*, obtenu -|attendu -[0-9]+, obtenu [1-9]	compare en unsigned char : return ((unsigned char)s1[i] - (unsigned char)s2[i]); (un char signé rend \x80 négatif).	compare as unsigned char: return ((unsigned char)s1[i] - (unsigned char)s2[i]); (a signed char makes \x80 negative).
+ft_strncmp	, 0\)	avec n == 0 on renvoie 0 sans rien lire.	with n == 0, return 0 without reading anything.
+ft_strncmp	.	arrête-toi à la première différence, à n caractères, ou quand une des deux chaînes se termine.	stop at the first difference, after n characters, or when one of the strings ends.
+ft_memchr	, (200|354), 	c est converti en unsigned char et chaque octet lu comme unsigned char : ((unsigned char *)s)[i] == (unsigned char)c	c is converted to unsigned char and each byte read as unsigned char: ((unsigned char *)s)[i] == (unsigned char)c
+ft_memchr	, (100|0), 9\)	memchr ne s'arrête pas sur '\0' : il lit exactement n octets.	memchr does not stop on '\0': it reads exactly n bytes.
+ft_memchr	.	memchr cherche dans les n premiers octets exactement, et renvoie NULL si c n'y est pas.	memchr searches exactly the first n bytes, and returns NULL if c is not there.
+ft_memcmp	\\x00	memcmp ne s'arrête pas sur '\0' : il compare exactement n octets.	memcmp does not stop on '\0': it compares exactly n bytes.
+ft_strnstr	, "", 	si little est vide, renvoie big.	if little is empty, return big.
+ft_strnstr	.	ne lis jamais au-delà de len caractères de big : la condition doit vérifier i + j < len.	never read past len characters of big: the condition must check i + j < len.
+ft_atoi	\("-[0-9].*obtenu 0|\("\+[0-9].*obtenu 0	après le '-' ou le '+' il faut avancer (i++), sinon le premier chiffre n'est jamais lu et tu renvoies 0.	after the '-' or '+' you must move forward (i++), otherwise the first digit is never read and you return 0.
+ft_atoi	\("[-+][-+]	un seul signe est accepté : "--42" ou "+-42" donnent 0. Utilise un if, pas un while, pour le signe.	only one sign is accepted: "--42" or "+-42" give 0. Use an if, not a while, for the sign.
+ft_atoi	\(" *[-+] 	après le signe, aucun espace n'est accepté : "- 42" donne 0.	no space is accepted after the sign: "- 42" gives 0.
+ft_atoi	^TEST ft_atoi\("[^"]*\\(t|n|x0b|x0c|x0d)	les espaces à sauter sont ' ', '\t', '\n', '\v', '\f' et '\r' (codes 9 à 13, et 32).	the spaces to skip are ' ', '\t', '\n', '\v', '\f' and '\r' (codes 9 to 13, and 32).
+ft_atoi	-2147483648	pour INT_MIN, calcule dans un long, ou en négatif, sinon le calcul déborde.	for INT_MIN, compute in a long, or in negative, otherwise the computation overflows.
+ft_calloc	deborde	vérifie le débordement avant malloc : if (size != 0 && nmemb > SIZE_MAX / size) return (NULL);	check the overflow before malloc: if (size != 0 && nmemb > SIZE_MAX / size) return (NULL);
+ft_calloc	\(0, 0\)|\(0, 5\)|\(5, 0\)	avec une taille 0, renvoie quand même un pointeur valide : malloc(0) ou malloc(1), mais pas NULL.	with a size of 0, still return a valid pointer: malloc(0) or malloc(1), but not NULL.
+ft_calloc	zero	tous les octets doivent être à 0 : appelle ft_bzero(ptr, nmemb * size) après le malloc.	every byte must be 0: call ft_bzero(ptr, nmemb * size) after the malloc.
+ft_strdup	alloue|debordement	alloue strlen(s) + 1 : le +1 est pour le '\0'.	allocate strlen(s) + 1: the +1 is for the '\0'.
+
+# ------------------------------------------------------------ partie 2
+ft_substr	renvoie NULL : il faut renvoyer une chaine vide	si start >= strlen(s), renvoie une chaîne vide allouée : return (ft_strdup(""));	if start >= strlen(s), return an allocated empty string: return (ft_strdup(""));
+ft_substr	\("[^"]*", (10|4294967295), |SEGFAULT|ASan|overflow	si start >= strlen(s) tu ne dois pas lire s + start (c'est après la fin) : teste ça avant tout, et renvoie ft_strdup("").	if start >= strlen(s) you must not read s + start (it is past the end): check that first, and return ft_strdup("").
+ft_substr	, 18446744073709551615\)	len peut valoir SIZE_MAX : len + 1 déborde et vaut 0. Limite d'abord len à strlen(s + start), puis alloue len + 1.	len can be SIZE_MAX: len + 1 overflows to 0. First limit len to strlen(s + start), then allocate len + 1.
+ft_substr	alloue .* au lieu de	alloue au plus strlen(s + start) + 1, pas len + 1 : len peut être bien plus grand que ce qui reste.	allocate at most strlen(s + start) + 1, not len + 1: len can be much bigger than what is left.
+ft_strjoin	alloue|debordement	alloue strlen(s1) + strlen(s2) + 1.	allocate strlen(s1) + strlen(s2) + 1.
+ft_strtrim	.	on n'enlève les caractères de set qu'au début et à la fin, jamais au milieu. Si tout est enlevé : chaîne vide allouée.	characters of set are removed only at the start and the end, never in the middle. If everything is removed: allocated empty string.
+ft_split	renvoie NULL, attendu 0 mot	une chaîne vide (ou que des séparateurs) donne un tableau qui contient juste NULL, pas NULL.	an empty string (or only separators) gives an array that contains just NULL, not NULL.
+ft_split	maillon|mot|attendu	compte les mots en sautant les séparateurs consécutifs, au début et à la fin ; le tableau finit par NULL.	count the words by skipping consecutive separators, at the start and at the end; the array ends with NULL.
+ft_itoa	-2147483648	pour INT_MIN, -n déborde : travaille dans un long (long nb = n;).	for INT_MIN, -n overflows: work in a long (long nb = n;).
+ft_itoa	\(0\)	0 doit donner "0" : ta boucle ne tourne pas quand n == 0, traite ce cas à part (il compte 1 chiffre).	0 must give "0": your loop does not run when n == 0, handle that case apart (it counts 1 digit).
+ft_itoa	alloue|debordement	alloue nombre de chiffres + 1 pour le '\0', + 1 pour le '-' si n est négatif.	allocate the number of digits + 1 for the '\0', + 1 for the '-' if n is negative.
+ft_strmapi	index	f reçoit l'index du caractère (0, 1, 2...) en premier argument, puis le caractère.	f gets the index of the character (0, 1, 2...) as first argument, then the character.
+ft_strmapi	alloue|debordement	alloue strlen(s) + 1 et mets le '\0' à la fin du résultat.	allocate strlen(s) + 1 and put the '\0' at the end of the result.
+ft_striteri	adresse	f reçoit l'index puis l'ADRESSE du caractère (&s[i]), pour pouvoir le modifier sur place.	f gets the index then the ADDRESS of the character (&s[i]), so it can change it in place.
+ft_putnbr_fd	-2147483648	pour INT_MIN : écris "-2147483648" à part, ou travaille dans un long.	for INT_MIN: write "-2147483648" apart, or work in a long.
+ft_put(char|str|endl|nbr)_fd	a ecrit "" \(0 octets\)	rien n'a été écrit sur le fd : utilise write(fd, ...) avec le fd reçu en paramètre, pas 1.	nothing was written on the fd: use write(fd, ...) with the fd received as a parameter, not 1.
+ft_putendl_fd	a ecrit	putendl écrit la chaîne PUIS un '\n'.	putendl writes the string THEN a '\n'.
+
+# ------------------------------------------------------------ partie 3 (listes)
+ft_lstnew	.	alloue le maillon, mets content = content et next = NULL, et renvoie-le (NULL si malloc échoue).	allocate the node, set content = content and next = NULL, and return it (NULL if malloc fails).
+ft_lstadd_front	.	new->next = *lst; puis *lst = new;	new->next = *lst; then *lst = new;
+ft_lstsize	.	compte les maillons en avançant avec lst = lst->next jusqu'à NULL.	count the nodes by moving with lst = lst->next until NULL.
+ft_lstlast	.	avance tant que lst->next n'est pas NULL ; si lst est NULL, renvoie NULL.	move while lst->next is not NULL; if lst is NULL, return NULL.
+ft_lstadd_back	liste vide	si *lst est NULL, la liste devient new : if (!*lst) { *lst = new; return ; }	if *lst is NULL, the list becomes new: if (!*lst) { *lst = new; return ; }
+ft_lstadd_back	.	ajoute new après le DERNIER maillon (ft_lstlast(*lst)->next = new) sans toucher aux autres.	add new after the LAST node (ft_lstlast(*lst)->next = new) without touching the others.
+ft_lstdelone	PAS le maillon suivant	ne touche pas à lst->next : seulement del(lst->content) puis free(lst).	don't touch lst->next: only del(lst->content) then free(lst).
+ft_lstdelone	.	appelle del(lst->content) puis free(lst).	call del(lst->content) then free(lst).
+ft_lstclear	.	libère chaque maillon (del sur content + free) en gardant next de côté AVANT le free, puis mets *lst = NULL.	free each node (del on content + free) keeping next aside BEFORE the free, then set *lst = NULL.
+ft_lstiter	.	appelle f(lst->content) sur chaque maillon, du premier au dernier.	call f(lst->content) on each node, from the first to the last.
+ft_lstmap	fuite|malloc	si un malloc échoue : del(contenu que f vient de créer), ft_lstclear(&nouvelle_liste, del), return (NULL).	if a malloc fails: del(the content f just created), ft_lstclear(&new_list, del), return (NULL).
+ft_lstmap	ordre	ajoute les nouveaux maillons à la FIN de la nouvelle liste (ft_lstadd_back), sinon l'ordre est inversé.	add the new nodes at the END of the new list (ft_lstadd_back), otherwise the order is reversed.
+
+# ------------------------------------------------------------ problemes generaux
+*	malloc (echoue|qui echoue).*(SEGFAULT|BUS ERROR)|(SEGFAULT|BUS ERROR).*le malloc n°	ça plante quand malloc renvoie NULL : tu utilises le pointeur sans le vérifier. Juste après chaque malloc : if (!ptr) return (NULL);	it crashes when malloc returns NULL: you use the pointer without checking it. Right after every malloc: if (!ptr) return (NULL);
+*	le malloc n°.*ne renvoie pas NULL|malloc a echoue mais	après chaque malloc : if (!ptr) return (NULL);	after every malloc: if (!ptr) return (NULL);
+*	tu ne liberes pas ce qui etait deja alloue	quand un malloc échoue au milieu, libère tout ce que tu avais déjà alloué avant de renvoyer NULL.	when a malloc fails in the middle, free everything you already allocated before returning NULL.
+*	alloue .* seulement|debordement memoire	tu alloues trop peu : n'oublie pas le +1 pour le '\0'.	you allocate too little: don't forget the +1 for the '\0'.
+*	fuite memoire	chaque malloc doit avoir son free : regarde les chaînes intermédiaires (strjoin dans une boucle, copie temporaire...).	every malloc needs its free: look at the intermediate strings (strjoin in a loop, temporary copy...).
+*	n'a pas appele malloc	cette fonction doit renvoyer une NOUVELLE chaîne allouée avec malloc, pas un pointeur dans celle reçue.	this function must return a NEW string allocated with malloc, not a pointer into the one received.
+*	heap-buffer-overflow|stack-buffer-overflow|global-buffer-overflow	tu lis ou écris une case trop loin : vérifie < au lieu de <=, et la place du '\0'.	you read or write one cell too far: check < instead of <=, and where the '\0' goes.
+*	heap-use-after-free	tu utilises de la mémoire déjà libérée : garde ce dont tu as besoin (ex. next) AVANT le free.	you use memory that was already freed: keep what you need (e.g. next) BEFORE the free.
+*	double-free|ABORT	free appelé deux fois sur le même pointeur, ou sur un pointeur qui ne vient pas de malloc.	free called twice on the same pointer, or on a pointer that does not come from malloc.
+*	TIMEOUT	boucle infinie : vérifie que ton compteur avance à chaque tour, dans toutes les branches (i++ oublié dans un if ?).	infinite loop: check that your counter moves on every turn, in every branch (i++ forgotten in an if?).
+*	SEGFAULT|BUS ERROR	lis le test indiqué (libftest -v <fonction>) : souvent une lecture après le '\0', un index qui dépasse, ou un pointeur NULL.	read the test shown (libftest -v <function>): often a read past the '\0', an index too big, or a NULL pointer.
+*	^PROTO const	mets les const exactement comme dans le sujet (ni en plus, ni en moins) : ça marche pareil, mais c'est compté hors sujet. Mets #include "libft.h" dans le .c pour que le compilateur le voie.	put the const exactly as in the subject (no more, no less): it works the same, but it counts as off-subject. Put #include "libft.h" in the .c so the compiler sees it.
+*	exit dans ta fonction	ta fonction ne doit jamais appeler exit : renvoie une valeur à la place.	your function must never call exit: return a value instead.
+
+# ------------------------------------------------------------ norminette
+*	^NORM SPACE_BEFORE_FUNC	norme : entre le type et le nom de la fonction, une tabulation et pas un espace (int<TAB>ft_atoi(...)).	norm: between the type and the function name, a tab, not a space (int<TAB>ft_atoi(...)).
+*	^NORM (SPACE_REPLACE_TAB|TOO_FEW_TAB|TOO_MANY_TAB|MIXED_SPACE_TAB)	norme : indente uniquement avec des tabulations (VS Code : « Indent Using Tabs » en bas à droite ; vim : :set noexpandtab).	norm: indent with tabs only (VS Code: "Indent Using Tabs" at the bottom right; vim: :set noexpandtab).
+*	^NORM TAB_REPLACE_SPACE	norme : une tabulation là où il faut un espace (souvent après un mot-clé ou dans une expression).	norm: a tab where a space is needed (often after a keyword or inside an expression).
+*	^NORM MISALIGNED_VAR_DECL	norme : les noms de variables déclarées s'alignent sur la même colonne que le nom de la fonction, avec des tabulations.	norm: declared variable names line up on the same column as the function name, with tabs.
+*	^NORM MISALIGNED_FUNC_DECL	norme (libft.h) : aligne les noms des fonctions sur la même colonne, avec des tabulations.	norm (libft.h): line up the function names on the same column, with tabs.
+*	^NORM EMPTY_LINE_FUNCTION	norme : pas de ligne vide dans une fonction, sauf celle juste après les déclarations.	norm: no empty line inside a function, except the one right after the declarations.
+*	^NORM NL_AFTER_VAR_DECL	norme : une ligne vide juste après les déclarations de variables.	norm: one empty line right after the variable declarations.
+*	^NORM NL_AFTER_PREPROC	norme : une ligne vide après les #include.	norm: one empty line after the #include lines.
+*	^NORM INCLUDE_HEADER_ONLY	norme : un .c ne peut inclure que des .h (#include "libft.h", <stdlib.h>...).	norm: a .c can only include .h files (#include "libft.h", <stdlib.h>...).
+*	^NORM EMPTY_LINE_EOF	norme : supprime la ou les lignes vides à la fin du fichier.	norm: remove the empty line(s) at the end of the file.
+*	^NORM (CONSECUTIVE_NEWLINES|EMPTY_LINE_FILE_START)	norme : jamais deux lignes vides de suite, ni de ligne vide en début de fichier.	norm: never two empty lines in a row, nor an empty line at the start of the file.
+*	^NORM INVALID_HEADER	norme : il manque le header 42 en haut du fichier (vim : :Stdheader ou F1 ; VS Code : extension « 42 Header »).	norm: the 42 header is missing at the top of the file (vim: :Stdheader or F1; VS Code: "42 Header" extension).
+*	^NORM (SPC_AFTER_OPERATOR|SPC_BEFORE_OPERATOR)	norme : un espace de chaque côté des opérateurs (a + b, i = 0, i < n).	norm: one space on each side of operators (a + b, i = 0, i < n).
+*	^NORM SPACE_AFTER_KW	norme : un espace après if, while, return : if (x), return (x);	norm: one space after if, while, return: if (x), return (x);
+*	^NORM RETURN_PARENTHESIS	norme : la valeur renvoyée entre parenthèses : return (x);	norm: the returned value goes in parentheses: return (x);
+*	^NORM TOO_MANY_LINES	norme : 25 lignes max par fonction : sors une partie dans une fonction static du même fichier.	norm: 25 lines max per function: move a part into a static function in the same file.
+*	^NORM TOO_MANY_FUNCS	norme : 5 fonctions max par fichier.	norm: 5 functions max per file.
+*	^NORM TOO_MANY_VARS_FUNC	norme : 5 variables max par fonction : regroupe, ou découpe la fonction.	norm: 5 variables max per function: group them, or split the function.
+*	^NORM TOO_MANY_ARGS	norme : 4 paramètres max par fonction.	norm: 4 parameters max per function.
+*	^NORM LINE_TOO_LONG	norme : 80 colonnes max par ligne : coupe la ligne (après un opérateur, et indente la suite).	norm: 80 columns max per line: break the line (after an operator, and indent the rest).
+*	^NORM (WRONG_SCOPE_COMMENT|COMMENT_ON_INSTR)	norme : pas de commentaire dans une fonction, mets-les au-dessus.	norm: no comment inside a function, put them above it.
+*	^NORM DECL_ASSIGN_LINE	norme : pas d'initialisation à la déclaration : int i; puis i = 0; plus bas.	norm: no initialisation in the declaration: int i; then i = 0; below.
+*	^NORM (VAR_DECL_START_FUNC|WRONG_SCOPE_VAR)	norme : toutes les déclarations de variables au tout début de la fonction.	norm: all variable declarations at the very start of the function.
+*	^NORM (MULT_DECL_LINE|MULT_ASSIGN_LINE)	norme : une seule déclaration ou affectation par ligne.	norm: only one declaration or assignment per line.
+*	^NORM (FORBIDDEN_CS|TERNARY_FBIDDEN)	norme : for, do...while, switch et ?: sont interdits : utilise while et if.	norm: for, do...while, switch and ?: are forbidden: use while and if.
+*	^NORM BRACE_NEWLINE	norme : chaque accolade { ou } seule sur sa ligne.	norm: each brace { or } alone on its line.
+*	^NORM NEWLINE_PRECEDES_FUNC	norme : une ligne vide entre deux fonctions.	norm: one empty line between two functions.
+*	^NORM (SPC_BEFORE_NL|SPACE_EMPTY_LINE)	norme : pas d'espace ni de tabulation en fin de ligne.	norm: no space nor tab at the end of a line.
+*	^NORM (CONSECUTIVE_SPC|CONSECUTIVE_WS)	norme : jamais deux espaces de suite.	norm: never two spaces in a row.
+*	^NORM PARSING_ERROR	la norminette ne comprend pas le fichier : corrige d'abord l'erreur de compilation.	norminette does not understand the file: fix the compilation error first.

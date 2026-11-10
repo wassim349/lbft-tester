@@ -1,3 +1,4 @@
+/* conseil attendu : le '\0' final fait partie de la chaîne */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

@@ -1,3 +1,4 @@
+/* conseil attendu : qu'au début et à la fin, jamais au milieu */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

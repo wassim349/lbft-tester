@@ -1,3 +1,4 @@
+/* conseil attendu : avec une taille 0, renvoie quand même un pointeur valide */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

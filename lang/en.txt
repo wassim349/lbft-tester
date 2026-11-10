@@ -1,0 +1,1284 @@
+# Traductions anglaises. Le texte francais sert de cle (voir scripts/i18n.sh).
+# Une entree = une ligne "fr: " (copie exacte du texte du code) + une ligne "en: ".
+# Les %s, %d... doivent etre les memes, dans le meme ordre.
+# Les echappements sont ecrits comme dans le code C (\" \\0 \n).
+# Verifier : make i18n
+
+# ===================================================================== moteur C
+fr: absente
+en: missing
+
+fr: ABSENTE
+en: MISSING
+
+fr: (avertissements)
+en: (warnings)
+
+fr: SEGFAULT : acces memoire invalide
+en: SEGFAULT: invalid memory access
+
+fr: BUS ERROR : acces memoire invalide
+en: BUS ERROR: invalid memory access
+
+fr: ABORT : souvent un double free ou un free sur un mauvais pointeur
+en: ABORT: often a double free, or a free on a wrong pointer
+
+fr: TIMEOUT : plus de 3 s, boucle infinie ?
+en: TIMEOUT: more than 3 s, infinite loop?
+
+fr: ecrit plus de 16 Mo : boucle infinie d'ecriture ?
+en: wrote more than 16 MB: infinite write loop?
+
+fr: SIGFPE : division par zero ?
+en: SIGFPE: division by zero?
+
+fr: crash (signal inattendu)
+en: crash (unexpected signal)
+
+fr: ASan : %s dans %s
+en: ASan: %s in %s
+
+fr: le test s'est arrete sans resultat (exit dans ta fonction ?)
+en: the test stopped without a result (exit in your function?)
+
+fr: pendant : %s
+en: while: %s
+
+fr: tests suivants sautes : la fonction boucle deja a l'infini
+en: next tests skipped: the function already loops forever
+
+fr: %p (en dehors de %s !)
+en: %p (outside %s!)
+
+fr: retour attendu %lld, obtenu %lld
+en: expected return %lld, got %lld
+
+fr: signe du retour faux : attendu %s (libc = %lld), obtenu %lld
+en: wrong sign: expected %s (libc = %lld), got %lld
+
+fr: attendu %s, obtenu %s
+en: expected %s, got %s
+
+fr: retour attendu %s, obtenu %s
+en: expected return %s, got %s
+
+fr: %s : octet [%zu] attendu 0x%02x, obtenu 0x%02x
+en: %s: byte [%zu] expected 0x%02x, got 0x%02x
+
+fr: alloue %zu octet(s) seulement, il en faut %zu (debordement memoire !)
+en: allocates only %zu byte(s), %zu are needed (memory overflow!)
+
+fr: alloue %zu octets au lieu de %zu
+en: allocates %zu bytes instead of %zu
+
+fr: le malloc n°%d de la fonction echoue
+en: malloc #%d of the function fails
+
+fr: le malloc n°%d echoue mais la fonction ne renvoie pas NULL
+en: malloc #%d fails but the function does not return NULL
+
+fr: le malloc n°%d echoue : tu renvoies bien NULL mais tu ne liberes pas ce qui etait deja alloue (%zu bloc(s) perdu(s))
+en: malloc #%d fails: you do return NULL but you don't free what was already allocated (%zu block(s) lost)
+
+fr: fuite memoire : %zu bloc(s) jamais libere(s), %zu octet(s)
+en: memory leak: %zu block(s) never freed, %zu byte(s)
+
+fr: légende :
+en: legend:
+
+fr: ok
+en: ok
+
+fr: faux
+en: wrong
+
+fr: fuite
+en: leak
+
+fr: crash
+en: crash
+
+fr: boucle infinie
+en: infinite loop
+
+fr: erreur mémoire (ASan)
+en: memory error (ASan)
+
+fr: avertissement
+en: warning
+
+fr: Partie 1 · fonctions de la libc
+en: Part 1 · libc functions
+
+fr: Partie 2 · fonctions supplémentaires
+en: Part 2 · additional functions
+
+fr: Partie 3 · listes chaînées
+en: Part 3 · linked lists
+
+fr: tests réussis :
+en: tests passed:
+
+fr: graine aléatoire
+en: random seed
+
+# ============================================================ tests aleatoires
+fr: graine %u : relance avec --seed %u pour rejouer
+en: seed %u: run again with --seed %u to replay
+
+fr: tests aleatoires (%d appels)
+en: random tests (%d calls)
+
+fr: ft_atoi(%s) : attendu %d, obtenu %d
+en: ft_atoi(%s): expected %d, got %d
+
+fr: ft_strlcpy(dst, %s, %zu) : retour %zu (attendu %zu)%s
+en: ft_strlcpy(dst, %s, %zu): returns %zu (expected %zu)%s
+
+fr: , dst different
+en: , dst differs
+
+fr: ft_strlcat(dst de longueur %zu, %s, %zu) : retour %zu (attendu %zu)%s
+en: ft_strlcat(dst of length %zu, %s, %zu): returns %zu (expected %zu)%s
+
+fr: ft_strnstr(%s, %s, %zu) : attendu %s, obtenu %s
+en: ft_strnstr(%s, %s, %zu): expected %s, got %s
+
+fr: ft_memmove(buf+%d, buf+%d, %d) : %s
+en: ft_memmove(buf+%d, buf+%d, %d): %s
+
+fr: ne renvoie pas dst
+en: does not return dst
+
+fr: contenu different de memmove
+en: content differs from memmove
+
+fr: ft_strncmp(%s, %s, %zu) : attendu %d, obtenu %d
+en: ft_strncmp(%s, %s, %zu): expected %d, got %d
+
+fr: ft_memcmp(%s, %s, %zu) : attendu %d, obtenu %d
+en: ft_memcmp(%s, %s, %zu): expected %d, got %d
+
+fr: ft_strchr(%s, %d) : attendu %s, obtenu %s
+en: ft_strchr(%s, %d): expected %s, got %s
+
+fr: ft_strrchr(%s, %d) : attendu %s, obtenu %s
+en: ft_strrchr(%s, %d): expected %s, got %s
+
+fr: ft_memchr(%s, %d, %zu) : attendu %s, obtenu %s
+en: ft_memchr(%s, %d, %zu): expected %s, got %s
+
+fr: ft_itoa(%d) : attendu %s, obtenu %s
+en: ft_itoa(%d): expected %s, got %s
+
+fr: ft_substr(%s, %u, %zu) : attendu %s, obtenu %s
+en: ft_substr(%s, %u, %zu): expected %s, got %s
+
+fr: ft_strtrim(%s, %s) : attendu %s, obtenu %s
+en: ft_strtrim(%s, %s): expected %s, got %s
+
+fr: ft_strjoin(%s, %s) : attendu %s, obtenu %s
+en: ft_strjoin(%s, %s): expected %s, got %s
+
+fr: ft_split(%s, '%c') : attendu %zu mot(s), %s
+en: ft_split(%s, '%c'): expected %zu word(s), %s
+
+fr: obtenu NULL
+en: got NULL
+
+fr: mot different ou manquant
+en: word different or missing
+
+fr: trop de mots (pas de NULL final ?)
+en: too many words (no final NULL?)
+
+# ===================================================================== partie 1
+fr: %s(c) pour c de 0 a 127
+en: %s(c) for c from 0 to 127
+
+fr: %s(%d) %s : attendu %s, obtenu %d
+en: %s(%d) %s: expected %s, got %d
+
+fr: vrai
+en: true
+
+fr: faux (0)
+en: false (0)
+
+fr: %s(c) pour c de 128 a 255 et EOF (-1)
+en: %s(c) for c from 128 to 255 and EOF (-1)
+
+fr: %s(%d) : attendu %s, obtenu %d
+en: %s(%d): expected %s, got %d
+
+fr: %s renvoie 1 quand c'est vrai (conseille, pas bloquant)
+en: %s returns 1 when true (advised, not blocking)
+
+fr: %s(%d) renvoie %d : la libc renvoie juste \"non zero\", mais certains testeurs exigent 1
+en: %s(%d) returns %d: libc just returns \"non zero\", but some testers require 1
+
+fr: %s(c) pour c de -1 a 255, valeur exacte
+en: %s(c) for c from -1 to 255, exact value
+
+fr: %s(%d) : attendu %d, obtenu %d
+en: %s(%d): expected %d, got %d
+
+fr: ft_strlen(%s)
+en: ft_strlen(%s)
+
+fr: ft_strlen(chaine de 10000 caracteres)
+en: ft_strlen(string of 10000 characters)
+
+fr: ft_memset(buf, 'A', 5) sur un buffer de 10
+en: ft_memset(buf, 'A', 5) on a buffer of 10
+
+fr: ft_memset(buf, 0, 10)
+en: ft_memset(buf, 0, 10)
+
+fr: ft_memset(buf, 300, 4) : c converti en unsigned char (300 → 44)
+en: ft_memset(buf, 300, 4): c converted to unsigned char (300 → 44)
+
+fr: ft_memset(buf, 'x', 0) ne touche a rien
+en: ft_memset(buf, 'x', 0) touches nothing
+
+fr: ft_memset renvoie le pointeur de depart
+en: ft_memset returns the starting pointer
+
+fr: ft_bzero(buf, 5) sur un buffer de 10
+en: ft_bzero(buf, 5) on a buffer of 10
+
+fr: ft_bzero(buf, 0) ne touche a rien
+en: ft_bzero(buf, 0) touches nothing
+
+fr: ft_memcpy(dst, \"hello\", 6)
+en: ft_memcpy(dst, \"hello\", 6)
+
+fr: ft_memcpy copie aussi les \\0 (donnees binaires)
+en: ft_memcpy also copies the \\0 (binary data)
+
+fr: ft_memcpy(dst, src, 0) ne touche a rien
+en: ft_memcpy(dst, src, 0) touches nothing
+
+fr: ft_memcpy renvoie dst
+en: ft_memcpy returns dst
+
+fr: ft_memcpy(NULL, NULL, 3) ne plante pas (teste par certains correcteurs)
+en: ft_memcpy(NULL, NULL, 3) does not crash (tested by some evaluators)
+
+fr: devrait renvoyer NULL
+en: should return NULL
+
+fr: ft_memmove sans chevauchement
+en: ft_memmove without overlap
+
+fr: ft_memmove avec chevauchement, dst apres src : (s+2, s, 5)
+en: ft_memmove with overlap, dst after src: (s+2, s, 5)
+
+fr: ft_memmove avec chevauchement, dst avant src : (s, s+2, 5)
+en: ft_memmove with overlap, dst before src: (s, s+2, 5)
+
+fr: ft_memmove(s, s, 5) : meme pointeur
+en: ft_memmove(s, s, 5): same pointer
+
+fr: ft_memmove(dst, src, 0) ne touche a rien
+en: ft_memmove(dst, src, 0) touches nothing
+
+fr: ft_memmove renvoie dst
+en: ft_memmove returns dst
+
+fr: ft_memmove(NULL, NULL, 3) ne plante pas (teste par certains correcteurs)
+en: ft_memmove(NULL, NULL, 3) does not crash (tested by some evaluators)
+
+fr: ft_strlcpy(dst[12], %s, %zu)
+en: ft_strlcpy(dst[12], %s, %zu)
+
+fr: ft_strlcat(dst=%s, %s, %zu)
+en: ft_strlcat(dst=%s, %s, %zu)
+
+fr: %s(%s, %d)
+en: %s(%s, %d)
+
+fr: %s(\"\", 'a') et %s(\"\", '\\0')
+en: %s(\"\", 'a') and %s(\"\", '\\0')
+
+fr: ft_strncmp(%s, %s, %zu)
+en: ft_strncmp(%s, %s, %zu)
+
+fr: ft_memchr(\"abc\\0def\\310\", %d, %zu)
+en: ft_memchr(\"abc\\0def\\310\", %d, %zu)
+
+fr: ft_memcmp(%s, %s, %zu)
+en: ft_memcmp(%s, %s, %zu)
+
+fr: ft_strnstr(%s, %s, %zu)
+en: ft_strnstr(%s, %s, %zu)
+
+fr: ft_strnstr(\"\", \"\", 0) et (\"\", \"a\", 5)
+en: ft_strnstr(\"\", \"\", 0) and (\"\", \"a\", 5)
+
+fr: ft_atoi(%s)
+en: ft_atoi(%s)
+
+fr: ft_calloc(5, 4) : 20 octets tous a zero
+en: ft_calloc(5, 4): 20 bytes all zero
+
+fr: renvoie NULL
+en: returns NULL
+
+fr: octet [%d] vaut 0x%02x au lieu de 0
+en: byte [%d] is 0x%02x instead of 0
+
+fr: ft_calloc(1, 1000) tout a zero
+en: ft_calloc(1, 1000) all zero
+
+fr: ft_calloc(0, 0) : pointeur unique qu'on peut free (regle du sujet)
+en: ft_calloc(0, 0): unique pointer that can be freed (subject rule)
+
+fr: renvoie NULL : le sujet impose un pointeur valide qu'on peut free
+en: returns NULL: the subject requires a valid pointer that can be freed
+
+fr: ft_calloc(0, 5) et ft_calloc(5, 0) : pointeurs valides
+en: ft_calloc(0, 5) and ft_calloc(5, 0): valid pointers
+
+fr: ft_calloc(0, 5) renvoie NULL
+en: ft_calloc(0, 5) returns NULL
+
+fr: ft_calloc(5, 0) renvoie NULL
+en: ft_calloc(5, 0) returns NULL
+
+fr: ft_calloc(SIZE_MAX / 2 + 2, 2) : la multiplication deborde → NULL
+en: ft_calloc(SIZE_MAX / 2 + 2, 2): the multiplication overflows → NULL
+
+fr: nmemb * size deborde et vaut 2 : ta fonction alloue un petit bloc au lieu de renvoyer NULL (comme le vrai calloc)
+en: nmemb * size overflows and equals 2: your function allocates a small block instead of returning NULL (like the real calloc)
+
+fr: ft_calloc quand malloc echoue → NULL
+en: ft_calloc when malloc fails → NULL
+
+fr: malloc a echoue mais la fonction ne renvoie pas NULL
+en: malloc failed but the function does not return NULL
+
+fr: n'a pas appele malloc ?
+en: did not call malloc?
+
+fr: ft_strdup(%s)
+en: ft_strdup(%s)
+
+fr: renvoie le meme pointeur au lieu d'une copie
+en: returns the same pointer instead of a copy
+
+fr: ft_strdup quand malloc echoue → NULL
+en: ft_strdup when malloc fails → NULL
+
+# ===================================================================== partie 2
+fr: ft_substr(%s, %u, %zu)
+en: ft_substr(%s, %u, %zu)
+
+fr: renvoie NULL : il faut renvoyer une chaine vide \"\" allouee
+en: returns NULL: you must return an allocated empty string \"\"
+
+fr: ft_substr : protection des malloc
+en: ft_substr: malloc protection
+
+fr: ft_strjoin(%s, %s)
+en: ft_strjoin(%s, %s)
+
+fr: ft_strjoin : protection des malloc
+en: ft_strjoin: malloc protection
+
+fr: ft_strtrim(%s, %s)
+en: ft_strtrim(%s, %s)
+
+fr: ft_strtrim : protection des malloc
+en: ft_strtrim: malloc protection
+
+fr: renvoie NULL, attendu %d mot(s)
+en: returns NULL, expected %d word(s)
+
+fr: attendu %s
+en: expected %s
+
+fr: obtenu  %s
+en: got      %s
+
+fr: ft_split(%s, %s)
+en: ft_split(%s, %s)
+
+fr: ft_split : protection des malloc (chaque malloc echoue tour a tour)
+en: ft_split: malloc protection (each malloc fails in turn)
+
+fr: ft_itoa(%d)
+en: ft_itoa(%d)
+
+fr: ft_itoa : protection des malloc
+en: ft_itoa: malloc protection
+
+fr: ft_strmapi(\"hello\", majuscule)
+en: ft_strmapi(\"hello\", uppercase)
+
+fr: ft_strmapi(\"aaaaa\", c + index) : bon index passe a f
+en: ft_strmapi(\"aaaaa\", c + index): right index passed to f
+
+fr: f appelee %d fois au lieu de 5
+en: f called %d times instead of 5
+
+fr: ft_strmapi(\"\", f) : chaine vide allouee
+en: ft_strmapi(\"\", f): allocated empty string
+
+fr: ft_strmapi : protection des malloc
+en: ft_strmapi: malloc protection
+
+fr: ft_striteri(\"hello world\", majuscule si index pair)
+en: ft_striteri(\"hello world\", uppercase if index is even)
+
+fr: ft_striteri(\"abcdefghijkl\", index) : bon index et adresse
+en: ft_striteri(\"abcdefghijkl\", index): right index and address
+
+fr: ft_striteri(\"\", f) ne plante pas
+en: ft_striteri(\"\", f) does not crash
+
+fr: a ecrit %s (%zu octets), attendu %s (%zu octets)
+en: wrote %s (%zu bytes), expected %s (%zu bytes)
+
+fr: ft_putchar_fd(%s, fd)
+en: ft_putchar_fd(%s, fd)
+
+fr: ft_putstr_fd(%s, fd)
+en: ft_putstr_fd(%s, fd)
+
+fr: ft_putendl_fd(%s, fd)
+en: ft_putendl_fd(%s, fd)
+
+fr: ft_putnbr_fd(%d, fd)
+en: ft_putnbr_fd(%d, fd)
+
+# ===================================================================== partie 3
+fr: %s : la liste s'arrete au maillon %d au lieu de %d
+en: %s: the list stops at node %d instead of %d
+
+fr: %s : maillon %d contient %d au lieu de %d
+en: %s: node %d contains %d instead of %d
+
+fr: %s : la liste est plus longue que %d maillons
+en: %s: the list is longer than %d nodes
+
+fr: ft_lstnew(\"hello\") : content et next
+en: ft_lstnew(\"hello\"): content and next
+
+fr: content n'est pas le pointeur donne
+en: content is not the given pointer
+
+fr: next n'est pas initialise a NULL
+en: next is not set to NULL
+
+fr: ft_lstnew(NULL) : content NULL autorise
+en: ft_lstnew(NULL): NULL content allowed
+
+fr: content devrait etre NULL
+en: content should be NULL
+
+fr: ft_lstnew quand malloc echoue → NULL
+en: ft_lstnew when malloc fails → NULL
+
+fr: ft_lstadd_front sur une liste vide (*lst == NULL)
+en: ft_lstadd_front on an empty list (*lst == NULL)
+
+fr: *lst ne pointe pas sur le nouveau maillon
+en: *lst does not point to the new node
+
+fr: new->next devrait rester NULL
+en: new->next should stay NULL
+
+fr: ft_lstadd_front sur [b, c]
+en: ft_lstadd_front on [b, c]
+
+fr: new->next ne pointe pas sur l'ancienne tete
+en: new->next does not point to the old head
+
+fr: ft_lstadd_front 3 fois sur une liste vide : ordre inverse
+en: ft_lstadd_front 3 times on an empty list: reverse order
+
+fr: liste
+en: list
+
+fr: ft_lstsize(NULL) == 0
+en: ft_lstsize(NULL) == 0
+
+fr: ft_lstsize(liste de 1)
+en: ft_lstsize(list of 1)
+
+fr: ft_lstsize(liste de 3)
+en: ft_lstsize(list of 3)
+
+fr: ft_lstsize(liste de 1000)
+en: ft_lstsize(list of 1000)
+
+fr: ft_lstlast(NULL) == NULL
+en: ft_lstlast(NULL) == NULL
+
+fr: ft_lstlast(liste de 1) renvoie ce maillon
+en: ft_lstlast(list of 1) returns that node
+
+fr: ne renvoie pas le seul maillon
+en: does not return the only node
+
+fr: ft_lstlast(liste de 3) renvoie le 3e
+en: ft_lstlast(list of 3) returns the 3rd
+
+fr: ne renvoie pas le dernier maillon
+en: does not return the last node
+
+fr: ft_lstlast(liste de 1000) renvoie le 1000e
+en: ft_lstlast(list of 1000) returns the 1000th
+
+fr: ft_lstadd_back sur une liste vide (*lst == NULL)
+en: ft_lstadd_back on an empty list (*lst == NULL)
+
+fr: *lst devrait pointer sur le nouveau maillon
+en: *lst should point to the new node
+
+fr: ft_lstadd_back sur [a, b, c]
+en: ft_lstadd_back on [a, b, c]
+
+fr: le maillon n'est pas ajoute a la fin
+en: the node is not added at the end
+
+fr: new->next devrait etre NULL
+en: new->next should be NULL
+
+fr: ft_lstadd_back 100 fois a partir d'une liste vide : ordre conserve
+en: ft_lstadd_back 100 times from an empty list: order kept
+
+fr: tests aleatoires : 300 ajouts devant / derriere melanges
+en: random tests: 300 mixed front / back additions
+
+fr: graine %u : relance avec --seed %u
+en: seed %u: run again with --seed %u
+
+fr: ft_lstdelone : appelle del une fois et libere le maillon
+en: ft_lstdelone: calls del once and frees the node
+
+fr: del appelee %d fois au lieu de 1
+en: del called %d times instead of 1
+
+fr: ft_lstdelone ne libere PAS le maillon suivant
+en: ft_lstdelone does NOT free the next node
+
+fr: ft_lstclear sur 3 maillons : tout libere, *lst = NULL
+en: ft_lstclear on 3 nodes: everything freed, *lst = NULL
+
+fr: *lst n'est pas remis a NULL
+en: *lst is not set back to NULL
+
+fr: del appelee %d fois au lieu de 3
+en: del called %d times instead of 3
+
+fr: ft_lstclear sur une liste vide ne plante pas
+en: ft_lstclear on an empty list does not crash
+
+fr: *lst devrait rester NULL
+en: *lst should stay NULL
+
+fr: del appelee alors que la liste est vide
+en: del called although the list is empty
+
+fr: ft_lstclear sur 100 maillons : del appelee 100 fois, rien ne fuit
+en: ft_lstclear on 100 nodes: del called 100 times, nothing leaks
+
+fr: del appelee %d fois au lieu de 100
+en: del called %d times instead of 100
+
+fr: ft_lstiter sur [a, b, c] : f appelee dans l'ordre
+en: ft_lstiter on [a, b, c]: f called in order
+
+fr: ft_lstiter(NULL, f) ne plante pas
+en: ft_lstiter(NULL, f) does not crash
+
+fr: f appelee sur une liste vide
+en: f called on an empty list
+
+fr: ft_lstmap([\"ab\", \"cd\", \"ef\"], majuscule)
+en: ft_lstmap([\"ab\", \"cd\", \"ef\"], uppercase)
+
+fr: renvoie la liste d'origine au lieu d'une nouvelle
+en: returns the original list instead of a new one
+
+fr: la nouvelle liste est trop longue
+en: the new list is too long
+
+fr: la nouvelle liste n'a que 2 maillons
+en: the new list has only 2 nodes
+
+fr: la nouvelle liste n'a qu'un maillon
+en: the new list has only one node
+
+fr: ft_lstmap(NULL, f, del) renvoie NULL
+en: ft_lstmap(NULL, f, del) returns NULL
+
+fr: ft_lstmap : malloc qui echoue → NULL, tout libere (avec del)
+en: ft_lstmap: failing malloc → NULL, everything freed (with del)
+
+fr: ft_lstmap sur 50 maillons : ordre conserve, liste d'origine intacte
+en: ft_lstmap on 50 nodes: order kept, original list untouched
+
+fr: nouvelle liste
+en: new list
+
+fr: liste d'origine
+en: original list
+
+fr: del appelee %d fois alors que tout a reussi
+en: del called %d times although everything succeeded
+
+# ===================================================================== run.sh
+fr: --seed attend un nombre (ex. --seed 42)
+en: --seed needs a number (e.g. --seed 42)
+
+fr: langue : français
+en: language: English
+
+fr: (pour changer : libftest --lang)
+en: (to change it: libftest --lang)
+
+fr: pas de terminal pour le menu : libftest --lang fr (ou en)
+en: no terminal for the menu: libftest --lang en (or fr)
+
+fr: langue inconnue : %s (fr ou en)
+en: unknown language: %s (en or fr)
+
+fr: testeur à jour
+en: tester up to date
+
+fr: mise à jour impossible (pas de dépôt distant, ou modifications locales)
+en: cannot update (no remote repository, or local changes)
+
+fr: option inconnue : %s
+en: unknown option: %s
+
+fr: pas de libft dans ce dossier : je teste %s
+en: no libft in this folder: testing %s
+
+fr: Je ne trouve pas ta libft.
+en: I can't find your libft.
+
+fr: Va dans ton dossier libft, ou donne son chemin :
+en: Go to your libft folder, or give its path:
+
+fr: ~/chemin/vers/libft
+en: ~/path/to/libft
+
+fr: %s ne ressemble pas à une libft
+en: %s does not look like a libft
+
+fr: (pas de libft.h ni de ft_*.c dedans).
+en: (no libft.h and no ft_*.c in it).
+
+fr: fonction inconnue : %s
+en: unknown function: %s
+
+fr: tu voulais dire : %s
+en: did you mean: %s
+
+fr: (si c'est un dossier, il n'existe pas)
+en: (if it is a folder, it does not exist)
+
+fr: ASan ne fonctionne pas sur cette machine (il se bloque ou ne compile pas) : mode normal.
+en: ASan does not work on this machine (it hangs or does not compile): normal mode.
+
+fr: Sur les postes Linux de 42 il marche : lance --asan / --final là-bas.
+en: It works on the 42 Linux computers: run --asan / --final there.
+
+fr: (sur Mac, en mode ASan, les fuites et les malloc qui échouent ne sont pas testés :
+en: (on Mac, in ASan mode, leaks and failing mallocs are not tested:
+
+fr: le mode normal s'en charge. Sous Linux, tout est testé en même temps.)
+en: the normal mode handles them. On Linux, everything is tested at once.)
+
+fr: un autre libftest tourne déjà : j'attends qu'il finisse
+en: another libftest is already running: waiting for it to finish
+
+fr: normal
+en: normal
+
+fr: tests seuls
+en: tests only
+
+fr: FINAL (strict)
+en: FINAL (strict)
+
+fr: sujet v19.3
+en: subject v19.3
+
+fr: mode :
+en: mode:
+
+fr: libft :
+en: libft:
+
+fr: ce dossier
+en: this folder
+
+fr: Dépôt git
+en: Git repository
+
+fr: %s n'est pas un dépôt git : impossible de savoir ce que tu vas rendre
+en: %s is not a git repository: impossible to know what you will submit
+
+fr: modifications pas commitées (la moulinette ne les verra pas) :
+en: uncommitted changes (the moulinette will not see them):
+
+fr: tout est commité
+en: everything is committed
+
+fr: pas de branche distante suivie : vérifie que tu push bien sur le dépôt de rendu
+en: no tracked remote branch: check that you push to the submission repository
+
+fr: %s commit(s) pas encore push : fais git push
+en: %s commit(s) not pushed yet: run git push
+
+fr: tout est push
+en: everything is pushed
+
+fr: (d'après le dernier fetch)
+en: (according to the last fetch)
+
+fr: je teste une copie propre du dernier commit (ce que la moulinette verra)
+en: testing a clean copy of the last commit (what the moulinette will see)
+
+fr: git clone a échoué : je teste ton dossier tel quel
+en: git clone failed: testing your folder as it is
+
+fr: %s fichier(s) écarté(s) (ne compile pas, main() oublié...) : détail dans le bilan.
+en: %s file(s) left out (does not compile, forgotten main()...): details in the summary.
+
+fr: Je teste tous les autres.
+en: Testing all the others.
+
+fr: Aucun fichier ne compile : tests des fonctions annulés.
+en: No file compiles: function tests cancelled.
+
+fr: Le testeur ne compile pas avec ta libft :
+en: The tester does not compile with your libft:
+
+fr: (souvent : un prototype de libft.h différent du sujet, voir plus haut)
+en: (often: a prototype in libft.h that differs from the subject, see above)
+
+fr: PRÊT POUR LA MOULINETTE.
+en: READY FOR THE MOULINETTE.
+
+fr: Dernier réflexe : vérifie sur l'intra que le dépôt de rendu contient bien ton dernier push.
+en: Last reflex: check on the intra that the submission repository has your last push.
+
+fr: %s : tout est vert.
+en: %s: all green.
+
+fr: Tout est vert.
+en: All green.
+
+fr: Avant de rendre : libftest --final
+en: Before you submit: libftest --final
+
+fr: vérifications du rendu : %s erreur(s), voir en haut
+en: submission checks: %s error(s), see above
+
+fr: dépôt git : commit / push à faire, voir en haut
+en: git repository: commit / push needed, see above
+
+fr: Pas encore prêt : corrige dans l'ordre de la liste « À corriger ».
+en: Not ready yet: fix things in the order of the "To fix" list.
+
+fr: détail complet : %s
+en: full details: %s
+
+# ================================================================= install.sh
+fr: commande libftest supprimée (le dossier du testeur n'est pas touché)
+en: libftest command removed (the tester folder is not touched)
+
+fr: Installation de libft-tester
+en: Installing libft-tester
+
+fr: %s introuvable
+en: %s not found
+
+fr: git introuvable : le mode --git ne marchera pas
+en: git not found: --git mode will not work
+
+fr: Il manque des outils.
+en: Some tools are missing.
+
+fr: Sur Ubuntu/Debian : sudo apt install build-essential perl
+en: On Ubuntu/Debian: sudo apt install build-essential perl
+
+fr: (sur les postes de 42 ils sont déjà installés : demande au staff si ce n'est pas le cas)
+en: (they are already installed on the 42 computers: ask the staff if they are not)
+
+fr: norminette absente : installation (sans sudo)
+en: norminette missing: installing it (without sudo)
+
+fr: norminette installée (%s)
+en: norminette installed (%s)
+
+fr: je n'ai pas pu installer la norminette. Essaie à la main :
+en: I could not install norminette. Try by hand:
+
+fr: ou :
+en: or:
+
+fr: (Ubuntu perso sans pip : sudo apt install python3-venv, puis relance ./install.sh)
+en: (personal Ubuntu without pip: sudo apt install python3-venv, then run ./install.sh again)
+
+fr: (sur les postes de 42, la norminette est normalement déjà installée)
+en: (on the 42 computers, norminette is normally already installed)
+
+fr: (le testeur marche sans, mais ne vérifiera pas la norme)
+en: (the tester works without it, but will not check the norm)
+
+fr: commande libftest → %s
+en: libftest command → %s
+
+fr: le moteur du testeur compile
+en: the tester engine compiles
+
+fr: le moteur du testeur ne compile pas avec ce cc
+en: the tester engine does not compile with this cc
+
+fr: C'est installé.
+en: Installed.
+
+fr: Ouvre un nouveau terminal
+en: Open a new terminal
+
+fr: (ou tape : source %s) pour que la commande marche.
+en: (or type: source %s) so the command works.
+
+fr: Ensuite, dans ton dossier libft :
+en: Then, in your libft folder:
+
+fr: tout tester
+en: test everything
+
+fr: une seule fonction
+en: a single function
+
+fr: relance à chaque sauvegarde
+en: reruns on every save
+
+fr: avant de rendre
+en: before you submit
+
+fr: changer de langue
+en: change the language
+
+fr: toutes les options
+en: all the options
+
+# ================================================================== checks.sh
+fr: dossier introuvable : %s\n
+en: folder not found: %s\n
+
+fr: Fichiers du rendu
+en: Submitted files
+
+fr: %s présent
+en: %s present
+
+fr: %s manquant
+en: %s missing
+
+fr: crée README.md : 1re ligne en italique, puis les sections Description, Instructions et Resources (voir le sujet).
+en: create README.md: 1st line in italics, then the Description, Instructions and Resources sections (see the subject).
+
+fr: fichiers non autorisés à la racine (le sujet : Makefile, libft.h, ft_*.c, README.md) :
+en: files not allowed at the root (the subject: Makefile, libft.h, ft_*.c, README.md):
+
+fr: supprime-les du dépôt (git rm), ou range tes tests ailleurs que dans le dossier rendu.
+en: remove them from the repository (git rm), or keep your tests outside the submitted folder.
+
+fr: aucun fichier en trop à la racine
+en: no extra file at the root
+
+fr: fichiers compilés présents (.o/.a) : ne les push pas sur le dépôt
+en: compiled files present (.o/.a): don't push them to the repository
+
+fr: .DS_Store présent : ne le push pas (ajoute-le au .gitignore)
+en: .DS_Store present: don't push it (add it to .gitignore)
+
+fr: 1re ligne en italique conforme
+en: 1st line in italics is correct
+
+fr: README : 1re ligne incorrecte. Attendu (en italique) :
+en: README: wrong 1st line. Expected (in italics):
+
+fr: obtenu : %s
+en: got: %s
+
+fr: section "%s"
+en: section "%s"
+
+fr: README : section "%s" manquante
+en: README: section "%s" missing
+
+fr: usage de l'IA mentionné
+en: AI usage mentioned
+
+fr: README : le sujet impose de décrire l'usage de l'IA dans la section Resources
+en: README: the subject requires describing how AI was used, in the Resources section
+
+fr: libft.h et prototypes
+en: libft.h and prototypes
+
+fr: libft.h compile tout seul
+en: libft.h compiles on its own
+
+fr: libft.h ne compile pas tout seul :
+en: libft.h does not compile on its own:
+
+fr: size_t vient de <stddef.h> : ajoute #include <stddef.h> dans libft.h, avant les prototypes.
+en: size_t comes from <stddef.h>: add #include <stddef.h> in libft.h, before the prototypes.
+
+fr: protection contre la double inclusion (#ifndef)
+en: protection against double inclusion (#ifndef)
+
+fr: pas de protection #ifndef / #define dans libft.h
+en: no #ifndef / #define protection in libft.h
+
+fr: entoure tout libft.h de : #ifndef LIBFT_H / # define LIBFT_H / ... / #endif
+en: wrap all of libft.h in: #ifndef LIBFT_H / # define LIBFT_H / ... / #endif
+
+fr: structure t_list (content, next) définie
+en: t_list structure (content, next) defined
+
+fr: t_list absente ou incorrecte (il faut 'void *content' et 'struct s_list *next')
+en: t_list missing or wrong (it needs 'void *content' and 'struct s_list *next')
+
+fr: fonctions non déclarées dans libft.h (%s) :
+en: functions not declared in libft.h (%s):
+
+fr: les 43 fonctions sont déclarées
+en: all 43 functions are declared
+
+fr: prototype de %s différent du sujet :
+en: prototype of %s differs from the subject:
+
+fr: sujet   :
+en: subject:
+
+fr: le tien :
+en: yours  :
+
+fr: (le sujet v19.3 demande 'unsigned int', les anciennes versions 'int')
+en: (subject v19.3 asks for 'unsigned int', older versions for 'int')
+
+fr: les prototypes déclarés correspondent au sujet v19.3
+en: the declared prototypes match subject v19.3
+
+fr: mot-clé 'restrict' interdit par le sujet :
+en: keyword 'restrict' forbidden by the subject:
+
+fr: règle %s
+en: rule %s
+
+fr: règle %s manquante dans le Makefile
+en: rule %s missing in the Makefile
+
+fr: NAME = libft.a introuvable dans le Makefile
+en: NAME = libft.a not found in the Makefile
+
+fr: libtool est interdit (utilise ar)
+en: libtool is forbidden (use ar)
+
+fr: utilise ar
+en: uses ar
+
+fr: ar introuvable dans le Makefile
+en: ar not found in the Makefile
+
+fr: Makefile : $(wildcard), $(shell) ou *.c trouvé : souvent refusé en correction, liste les fichiers à la main
+en: Makefile: $(wildcard), $(shell) or *.c found: often refused in evaluation, list the files by hand
+
+fr: make compile sans erreur
+en: make compiles without error
+
+fr: make échoue (à la moulinette : 0 pour tout le projet) :
+en: make fails (at the moulinette: 0 for the whole project):
+
+fr: c'est une erreur de compilation dans un de tes .c : elle est détaillée (avec un conseil) dans le bilan, plus bas.
+en: it is a compilation error in one of your .c files: it is detailed (with a tip) in the summary below.
+
+fr: Makefile : les commandes des règles doivent commencer par une tabulation, pas par des espaces.
+en: Makefile: rule commands must start with a tab, not with spaces.
+
+fr: Makefile : un fichier listé dans tes sources n'existe pas (faute de frappe ou fichier pas créé).
+en: Makefile: a file listed in your sources does not exist (typo, or file not created).
+
+fr: flag %s absent d'au moins une compilation
+en: flag %s missing from at least one compilation
+
+fr: flags -Wall -Wextra -Werror partout
+en: flags -Wall -Wextra -Werror everywhere
+
+fr: mets CFLAGS = -Wall -Wextra -Werror et utilise $(CC) $(CFLAGS) dans la règle des .o.
+en: set CFLAGS = -Wall -Wextra -Werror and use $(CC) $(CFLAGS) in the .o rule.
+
+fr: le sujet impose 'cc' comme compilateur
+en: the subject requires 'cc' as the compiler
+
+fr: compile avec cc
+en: compiles with cc
+
+fr: libft.a créé à la racine
+en: libft.a created at the root
+
+fr: relink : un 2e 'make' recompile alors que rien n'a changé
+en: relink: a 2nd 'make' recompiles although nothing changed
+
+fr: la règle $(NAME) doit dépendre des .o (pas être .PHONY, ni dépendre de all/clean) : $(NAME): $(OBJS)
+en: the $(NAME) rule must depend on the .o files (not be .PHONY, nor depend on all/clean): $(NAME): $(OBJS)
+
+fr: pas de relink
+en: no relink
+
+fr: modifier libft.h relance la compilation
+en: changing libft.h triggers a recompilation
+
+fr: modifier libft.h ne recompile rien : ajoute libft.h aux dépendances des .o (ex. %%.o: %%.c libft.h)
+en: changing libft.h recompiles nothing: add libft.h to the .o dependencies (e.g. %%.o: %%.c libft.h)
+
+fr: make clean laisse des .o
+en: make clean leaves .o files
+
+fr: make clean supprime les .o
+en: make clean removes the .o files
+
+fr: make clean garde libft.a
+en: make clean keeps libft.a
+
+fr: make clean ne doit pas supprimer libft.a
+en: make clean must not remove libft.a
+
+fr: make fclean ne supprime pas libft.a
+en: make fclean does not remove libft.a
+
+fr: make fclean supprime libft.a
+en: make fclean removes libft.a
+
+fr: make re reconstruit libft.a
+en: make re rebuilds libft.a
+
+fr: make re ne reconstruit pas libft.a
+en: make re does not rebuild libft.a
+
+fr: make -j4 fonctionne
+en: make -j4 works
+
+fr: make -j4 échoue (compilation en parallèle) : vérifie les dépendances de tes règles
+en: make -j4 fails (parallel build): check the dependencies of your rules
+
+fr: libft.a n'a pas été créé par make
+en: libft.a was not created by make
+
+fr: Contenu de libft.a
+en: Content of libft.a
+
+fr: fonctions absentes de libft.a (%s/43) :
+en: functions missing from libft.a (%s/43):
+
+fr: les 43 fonctions sont dans libft.a
+en: all 43 functions are in libft.a
+
+fr: un main() est compilé dans libft.a (à retirer)
+en: a main() is compiled into libft.a (remove it)
+
+fr: fonctions externes interdites (seuls malloc, free, write sont permis) :
+en: forbidden external functions (only malloc, free, write are allowed):
+
+fr: remplace-les par tes propres ft_ (ex. strlen → ft_strlen) ; printf et les autres sont interdits dans la libft.
+en: replace them with your own ft_ functions (e.g. strlen → ft_strlen); printf and the others are forbidden in the libft.
+
+fr: aucune fonction externe interdite (seulement malloc, free, write)
+en: no forbidden external function (only malloc, free, write)
+
+fr: appels à memset/memcpy générés par le compilateur (souvent un tableau initialisé avec = {0}) :
+en: memset/memcpy calls generated by the compiler (often an array initialised with = {0}):
+
+fr: variables globales interdites : %s
+en: forbidden global variables: %s
+
+fr: aucune variable globale
+en: no global variable
+
+fr: variables static trouvées (globales de fichier) : %s
+en: static variables found (file globals): %s
+
+fr: fichiers .c non compilés par le Makefile (inutiles ou oubliés dans SRC) :
+en: .c files not compiled by the Makefile (useless, or forgotten in SRC):
+
+fr: tous les ft_*.c sont compilés dans libft.a
+en: all ft_*.c files are compiled into libft.a
+
+fr: vérifications du rendu : tout est bon
+en: submission checks: all good
+
+fr: (%s points vérifiés)
+en: (%s points checked)
+
+fr: vérifications du rendu : %s OK,
+en: submission checks: %s OK,
+
+fr: %s erreur(s)
+en: %s error(s)
+
+fr: %s avertissement(s)
+en: %s warning(s)
+
+# ================================================================= summary.sh
+fr: la norminette ne comprend pas la ligne (erreur de syntaxe ?)
+en: norminette does not understand the line (syntax error?)
+
+fr: %s est vide
+en: %s is empty
+
+fr: ne compile pas
+en: does not compile
+
+fr: contient un main() : retire-le (la moulinette a son propre main, ça ne linke pas)
+en: contains a main(): remove it (the moulinette has its own main, it won't link)
+
+fr: définit aussi %s (déjà dans %s.c) : 'duplicate symbol' au link
+en: also defines %s (already in %s.c): 'duplicate symbol' at link time
+
+fr: utilise %s, qui ne compile pas ou n'existe pas
+en: uses %s, which does not compile or does not exist
+
+fr: %s ne contient pas la fonction %s
+en: %s does not contain the function %s
+
+fr: (il définit : %s)
+en: (it defines: %s)
+
+fr: rien
+en: nothing
+
+fr: %s n'est pas déclarée dans libft.h
+en: %s is not declared in libft.h
+
+fr: %s absente de libft.a
+en: %s missing from libft.a
+
+fr: pas testée : le testeur n'a pas pu être compilé avec ta libft (voir plus haut)
+en: not tested: the tester could not be compiled with your libft (see above)
+
+fr: %s test(s) raté(s) sur %s
+en: %s test(s) failed out of %s
+
+fr: … et %s autre(s) (tout voir : -v, ou trace.log)
+en: … and %s more (see everything: -v, or trace.log)
+
+fr: prototype différent du sujet
+en: prototype differs from the subject
+
+fr: prototype : les const diffèrent du sujet : %s
+en: prototype: the const differ from the subject: %s
+
+fr: (sujet : %s)
+en: (subject: %s)
+
+fr: norminette : %s erreur(s)
+en: norminette: %s error(s)
+
+fr: Bilan
+en: Summary
+
+fr: fonction(s) prête(s)
+en: function(s) ready
+
+fr: nouvelles réussites :
+en: newly passing:
+
+fr: cassées depuis la dernière fois :
+en: broken since last time:
+
+fr: prêtes :
+en: ready:
+
+fr: fonction
+en: function
+
+fr: verdict
+en: verdict
+
+fr: bloque la compilation
+en: blocks compilation
+
+fr: plante / fuit
+en: crashes / leaks
+
+fr: résultat faux
+en: wrong result
+
+fr: norme
+en: norm
+
+fr: pas écrite
+en: not written
+
+fr: Bloque la compilation
+en: Blocks compilation
+
+fr: à la moulinette, 0 pour tout le projet
+en: at the moulinette, 0 for the whole project
+
+fr: Plante, fuit ou boucle
+en: Crashes, leaks or loops
+
+fr: Résultat faux
+en: Wrong result
+
+fr: Norme seulement
+en: Norm only
+
+fr: (les tests passent)
+en: (the tests pass)
+
+fr: Pas encore écrites
+en: Not written yet
+
+fr: À corriger, dans cet ordre
+en: To fix, in this order
+
+fr: Risques
+en: Risks
+
+fr: (ne bloquent pas, mais certains correcteurs/testeurs les comptent faux)
+en: (not blocking, but some evaluators/testers count them as wrong)
+
+fr: Par où commencer
+en: Where to start
+
+fr: Les vérifications du rendu (en haut) ont trouvé %s erreur(s) : un Makefile qui échoue, c’est 0 pour tout le projet.
+en: The submission checks (above) found %s error(s): a failing Makefile means 0 for the whole project.
+
+fr: Ensuite :
+en: Then:
+
+fr: Corrige la norme de %s, puis relance %s.
+en: Fix the norm of %s, then run %s again.
+
+fr: Corrige %s en premier, puis relance juste elle : %s
+en: Fix %s first, then rerun just that one: %s
+
+fr: ou laisse tourner %s : ça relance à chaque sauvegarde.
+en: or keep %s running: it reruns on every save.
+
+fr: norminette pas installée : ./install.sh (ou python3 -m pip install --user norminette)
+en: norminette not installed: ./install.sh (or python3 -m pip install --user norminette)
+
+# =================================================================== watch.sh
+fr: fin du mode watch
+en: watch mode ended
+
+fr: mode watch · Ctrl+C pour quitter
+en: watch mode · Ctrl+C to quit
+
+fr: en attente de modifications dans %s
+en: waiting for changes in %s

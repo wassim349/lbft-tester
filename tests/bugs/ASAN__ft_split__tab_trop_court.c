@@ -1,3 +1,4 @@
+/* conseil attendu : tu lis ou écris une case trop loin */
 #include "libft.h"
 #include <stdlib.h>
 static size_t cw(char const*s,char c){size_t n=0;while(*s){while(*s==c)s++;if(*s)n++;while(*s&&*s!=c)s++;}return n;}

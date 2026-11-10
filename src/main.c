@@ -16,6 +16,7 @@
 extern int	g_suites_ok, g_suites_ko, g_suites_missing, g_tests_total, g_tests_ok;
 extern char	g_ko_names[], g_missing_names[];
 extern FILE	*g_trace;
+extern FILE	*g_trace_key;
 extern FILE	*g_results;
 extern int	g_verbose;
 extern const char	*g_outdir;
@@ -88,28 +89,35 @@ int	main(int ac, char **av)
 	char	path[1024];
 
 	setvbuf(stdout, NULL, _IOLBF, 0);
+	t_lang_init();
 	if (getenv("TESTER_OUT"))
 		g_outdir = getenv("TESTER_OUT");
 	g_verbose = getenv("TESTER_VERBOSE") && *getenv("TESTER_VERBOSE") == '1';
 	snprintf(path, sizeof(path), "%s/trace.log", g_outdir);
 	g_trace = fopen(path, "w");
+	snprintf(path, sizeof(path), "%s/trace.key", g_outdir);
+	g_trace_key = fopen(path, "w");
 	snprintf(path, sizeof(path), "%s/results.txt", g_outdir);
 	g_results = fopen(path, "w");
-	printf(DIM "  légende : " RST GRN "✔" RST " ok  " RED "✘" RST " faux  "
-		BLU "L" RST " fuite  " MAG BOLD "S" RST " crash  "
-		MAG BOLD "T" RST " boucle infinie  " MAG BOLD "A" RST " erreur mémoire (ASan)  "
-		YEL "!" RST " avertissement\n");
-	run_part("Partie 1 · fonctions de la libc", g_part1,
+	printf(DIM "  %s " RST GRN "✔" RST " %s  " RED "✘" RST " %s  "
+		BLU "L" RST " %s  " MAG BOLD "S" RST " %s  "
+		MAG BOLD "T" RST " %s  " MAG BOLD "A" RST " %s  "
+		YEL "!" RST " %s\n", TR("légende :"), TR("ok"), TR("faux"), TR("fuite"),
+		TR("crash"), TR("boucle infinie"), TR("erreur mémoire (ASan)"), TR("avertissement"));
+	run_part(TR("Partie 1 · fonctions de la libc"), g_part1,
 		sizeof(g_part1) / sizeof(*g_part1), ac, av);
-	run_part("Partie 2 · fonctions supplémentaires", g_part2,
+	run_part(TR("Partie 2 · fonctions supplémentaires"), g_part2,
 		sizeof(g_part2) / sizeof(*g_part2), ac, av);
-	run_part("Partie 3 · listes chaînées", g_part3,
+	run_part(TR("Partie 3 · listes chaînées"), g_part3,
 		sizeof(g_part3) / sizeof(*g_part3), ac, av);
 
-	printf("\n   tests réussis : %s%d / %d" RST DIM "   (graine aléatoire %u)" RST "\n",
-		g_tests_ok == g_tests_total ? GRN : RED, g_tests_ok, g_tests_total, t_seed());
+	printf("\n   %s %s%d / %d" RST DIM "   (%s %u)" RST "\n", TR("tests réussis :"),
+		g_tests_ok == g_tests_total ? GRN : RED, g_tests_ok, g_tests_total,
+		TR("graine aléatoire"), t_seed());
 	if (g_trace)
 		fclose(g_trace);
+	if (g_trace_key)
+		fclose(g_trace_key);
 	if (g_results)
 		fclose(g_results);
 	return (g_suites_ko || g_suites_missing ? 1 : 0);

@@ -1,3 +1,4 @@
+/* conseil attendu : si un malloc échoue : del(contenu */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

@@ -1,3 +1,4 @@
+/* conseil attendu : c doit être converti en char */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

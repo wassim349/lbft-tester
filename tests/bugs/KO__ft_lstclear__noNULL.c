@@ -1,3 +1,4 @@
+/* conseil attendu : libère chaque maillon */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

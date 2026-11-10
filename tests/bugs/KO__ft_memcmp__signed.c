@@ -1,3 +1,4 @@
+/* conseil attendu : compare en unsigned char */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

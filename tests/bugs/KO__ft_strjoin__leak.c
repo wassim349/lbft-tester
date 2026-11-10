@@ -1,3 +1,4 @@
+/* conseil attendu : chaque malloc doit avoir son free */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

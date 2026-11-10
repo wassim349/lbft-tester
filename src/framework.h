@@ -25,6 +25,13 @@
 # endif
 
 extern int	g_soft_next;
+extern int	g_lang_en;
+
+/* traduction : le texte francais sert de cle (catalogue lang/en.txt) */
+void		t_lang_init(void);
+const char	*TR(const char *fr);
+/* N_("...") : texte a traduire plus tard avec TR() (reperé par make i18n) */
+# define N_(s) s
 
 # define TEST(...) for (int _t_ = t_begin(__VA_ARGS__); _t_; _t_ = (t_end(), 0))
 
