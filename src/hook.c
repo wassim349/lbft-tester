@@ -26,6 +26,7 @@ static struct
 	int		calls;
 	int		fail_at;
 	int		triggered;
+	int		overflow;
 	size_t	nlive;
 	t_live	live[MAX_LIVE];
 }	g;
@@ -43,6 +44,8 @@ static void	live_add(void *p, size_t size)
 		g.live[g.nlive].size = size;
 		g.nlive++;
 	}
+	else
+		g.overflow = 1;		/* table pleine : ce bloc n'est pas suivi */
 }
 
 static void	live_remove(void *p)
@@ -103,6 +106,7 @@ void	hk_start(void)
 	g.calls = 0;
 	g.fail_at = 0;
 	g.triggered = 0;
+	g.overflow = 0;
 	g.paused = 0;
 	g.on = 1;
 }
@@ -114,6 +118,7 @@ size_t	hk_live_count(void) { return (g.nlive); }
 void	hk_forget_all(void) { g.nlive = 0; }
 int		hk_fail_triggered(void) { return (g.triggered); }
 int		hk_malloc_calls(void) { return (g.calls); }
+int		hk_overflow(void) { return (g.overflow); }
 
 size_t	hk_live_bytes(void)
 {

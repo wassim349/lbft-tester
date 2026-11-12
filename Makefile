@@ -2,6 +2,8 @@
 #   LIBFT = dossier de la libft (pour libft.h)
 #   OUT   = dossier de build de ce mode (build/normal ou build/asan)
 #   ASAN  = 1 pour compiler avec -fsanitize=address
+# LIBFT et OUT ne doivent pas contenir d'espace (make ne les supporte pas) : run.sh
+# passe des chemins relatifs, et la libft a travers le lien $(OUT)/libft_src.
 
 LIBFT	?= ../libft
 OUT		?= build/normal

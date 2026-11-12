@@ -7,7 +7,7 @@
 RUN="$1"; LIBFT="$2"; shift 2
 HERE="$(cd "$(dirname "$0")" && pwd)"
 . "$HERE/common.sh"
-STAMP="$HERE/../build/.watch_stamp"
+STAMP="$HERE/../build/.watch_stamp.$$"	# un par --watch : deux en meme temps ne se genent pas
 mkdir -p "$HERE/../build"
 
 trap 'echo; echo "   ${DIM}$(msg "fin du mode watch")${RST}"; rm -f "$STAMP"; exit 0' INT TERM
@@ -32,12 +32,12 @@ while true; do
 	touch "$STAMP"
 	fns=()
 	all=0
-	for f in $changed; do
+	while IFS= read -r f; do	# une ligne par fichier : marche aussi avec un espace dans le chemin
 		b="$(basename "$f")"
 		case "$b" in
 			ft_*.c) fns+=("${b%.c}") ;;
 			*) all=1 ;;
 		esac
-	done
+	done <<< "$changed"
 	if [ $all = 1 ] || [ $# -gt 0 ]; then run "$@"; else run "${fns[@]}"; fi
 done

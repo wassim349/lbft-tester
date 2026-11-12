@@ -10,7 +10,8 @@
 #include <time.h>
 #include <unistd.h>
 
-#define TIMEOUT_SEC 3
+#define TIMEOUT_SEC 3			/* temps CPU : une machine chargee ne donne pas de faux TIMEOUT */
+#define TIMEOUT_WALL 15			/* temps reel : filet si la fonction attend sans calculer */
 #define MEM_LIMIT (1024UL * 1024UL * 1024UL)	/* 1 Go par test (hors ASan) */
 #define FILE_LIMIT (16UL * 1024UL * 1024UL)		/* 16 Mo ecrits au max */
 #define DETAILS_MAX 32768
@@ -405,6 +406,12 @@ void	t_end(void)
 	hk_stop();
 	n = hk_live_count();
 	bytes = hk_live_bytes();
+	if (hk_overflow())
+	{
+		g_child_warn = 1;
+		child_say('W', "trop de blocs alloues en meme temps pour tous les suivre : "
+			"les fuites de ce test ne sont pas toutes verifiees");
+	}
 	status = 'O';
 	if (n && !g_child_fail)
 		status = 'L';
@@ -433,9 +440,9 @@ static void	child_limits(void)
 	r.rlim_cur = 0;
 	r.rlim_max = 0;
 	setrlimit(RLIMIT_CORE, &r);			/* pas de fichier core qui remplit le disque */
-	r.rlim_cur = TIMEOUT_SEC + 1;
+	r.rlim_cur = TIMEOUT_SEC;
 	r.rlim_max = TIMEOUT_SEC + 2;
-	setrlimit(RLIMIT_CPU, &r);			/* filet de securite si alarm() rate */
+	setrlimit(RLIMIT_CPU, &r);			/* 3 s de calcul -> SIGXCPU (TIMEOUT) */
 	r.rlim_cur = FILE_LIMIT;
 	r.rlim_max = FILE_LIMIT;
 	setrlimit(RLIMIT_FSIZE, &r);
@@ -714,7 +721,7 @@ int	t_begin(const char *fmt, ...)
 			close(errfd);
 		signal(SIGPIPE, SIG_IGN);
 		child_limits();
-		alarm(TIMEOUT_SEC);
+		alarm(TIMEOUT_WALL);
 		hk_start();
 		return (1);
 	}

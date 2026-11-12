@@ -267,9 +267,13 @@ if [ ! -f "$OUT/libft.a" ]; then
 else
 	# ------------------------------------------------------------- 3. tests
 	bash "$HERE/scripts/gen_available.sh" "$LIBFT" "$OUT/libft.a" "$OUT/available.h"
-	if ! make -s -C "$HERE" LIBFT="$LIBFT" OUT="$OUT" ASAN=$ASAN > "$OUT/tester_build.log" 2>&1; then
+	# make ne supporte pas les espaces dans les chemins ("~/mon dossier/libft") : on lui donne
+	# des chemins relatifs au testeur, et la libft a travers un lien sans espace.
+	ROUT="${OUT#"$HERE"/}"
+	rm -f "$OUT/libft_src"; ln -s "$LIBFT" "$OUT/libft_src"
+	if ! make -s -C "$HERE" LIBFT="$ROUT/libft_src" OUT="$ROUT" ASAN=$ASAN > "$OUT/tester_build.log" 2>&1; then
 		echo; echo "   ${RED}${BOLD}$(msg 'Le testeur ne compile pas avec ta libft :')${RST}"
-		grep -E 'error|undefined|duplicate' "$OUT/tester_build.log" | head -n 10 | sed 's/^/     /'
+		grep -E 'error|undefined|duplicate' "$OUT/tester_build.log" | head -n 10 | sed -e 's#[^ ]*/libft_src/##' -e 's/^/     /'
 		echo "   ${DIM}$(msg '(souvent : un prototype de libft.h différent du sujet, voir plus haut)')${RST}"
 	else
 		echo

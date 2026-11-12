@@ -18,6 +18,7 @@ size_t	hk_live_bytes(void);
 void	hk_forget_all(void);	/* oublie les blocs suivis (sans les liberer) */
 void	hk_fail_at(int n);		/* le n-ieme malloc a partir de maintenant echoue */
 int		hk_fail_triggered(void);
+int		hk_overflow(void);		/* trop de blocs vivants : le suivi des fuites est incomplet */
 int		hk_malloc_calls(void);	/* mallocs depuis hk_start / hk_fail_at */
 void	*hk_nofail_malloc(size_t size);	/* suivi, mais n'echoue jamais */
 

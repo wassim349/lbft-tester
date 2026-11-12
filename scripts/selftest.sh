@@ -50,6 +50,26 @@ else
 	bad "libft correcte : des tests échouent alors qu'ils ne devraient pas"
 	echo "$out" | grep -E '^  ft_.* KO$' | head -n 5 | sed 's/^/       /'
 fi
+
+# --- la meme, dans un dossier avec un espace dans le nom
+mkdir -p "$TMP/mon dossier"
+cp -r "$HERE/tests/ref" "$TMP/mon dossier/libft"
+line="$(run "$TMP/mon dossier/libft" | grep -E 'tests réussis' | head -n 1)"
+if echo "$line" | grep -qE ': ([0-9]+) / \1 '; then good "libft correcte, chemin avec un espace"
+else bad "libft correcte, chemin avec un espace : ${line:-le testeur ne tourne pas}"; fi
+
+# --- la meme, avec d'autres graines : les tests aleatoires ne doivent jamais se tromper
+# (SELFTEST_SEEDS=50 make selftest pour en essayer plus)
+nseeds="${SELFTEST_SEEDS:-8}"; seedko=""
+for ((i = 0; i < nseeds; i++)); do
+	seed=$(( (RANDOM << 15 | RANDOM) + 1 ))
+	line="$(LIBFTEST_LANG=fr LIBFTEST_LANG_SET=1 NO_COLOR=1 bash "$HERE/run.sh" -q --seed "$seed" "$TMP/ref" 2>&1 \
+		| grep -E 'tests réussis' | head -n 1)"
+	echo "$line" | grep -qE ': ([0-9]+) / \1 ' || seedko="$seedko $seed"
+done
+if [ -z "$seedko" ]; then good "libft correcte, $nseeds autres graines"
+else bad "libft correcte : faux positif avec --seed$seedko (rejoue : libftest --seed N tests/ref)"; fi
+
 out="$(run_en "$TMP/ref")"
 line="$(echo "$out" | grep -E 'tests passed' | head -n 1)"
 left="$(french_left "$out")"

@@ -23,6 +23,9 @@ en: BUS ERROR: invalid memory access
 fr: ABORT : souvent un double free ou un free sur un mauvais pointeur
 en: ABORT: often a double free, or a free on a wrong pointer
 
+fr: trop de blocs alloues en meme temps pour tous les suivre : les fuites de ce test ne sont pas toutes verifiees
+en: too many blocks allocated at the same time to track them all: the leaks of this test are not all checked
+
 fr: TIMEOUT : plus de 3 s, boucle infinie ?
 en: TIMEOUT: more than 3 s, infinite loop?
 

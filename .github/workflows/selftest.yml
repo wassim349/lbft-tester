@@ -1,0 +1,28 @@
+# Lance "make selftest" a chaque push : le testeur doit toujours detecter les bugs de
+# tests/bugs, sur Linux (comme les postes de 42) avec gcc et clang, et sur Mac.
+name: selftest
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cc: [gcc, clang]
+    steps:
+      - uses: actions/checkout@v4
+      - name: cc = ${{ matrix.cc }}
+        run: |
+          sudo ln -sf "$(command -v ${{ matrix.cc }})" /usr/local/bin/cc
+          cc --version
+      - run: make selftest
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: make selftest
