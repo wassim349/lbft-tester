@@ -1,4 +1,4 @@
-/* conseil attendu : c est converti en unsigned char et chaque octet */
+/* conseil attendu : en quoi c et les octets sont convertis */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

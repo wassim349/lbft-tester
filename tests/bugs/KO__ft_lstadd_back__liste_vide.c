@@ -1,4 +1,4 @@
-/* conseil attendu : si *lst est NULL, la liste devient new */
+/* conseil attendu : si la liste est vide au départ */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

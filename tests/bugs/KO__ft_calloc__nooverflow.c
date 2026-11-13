@@ -1,4 +1,4 @@
-/* conseil attendu : vérifie le débordement avant malloc */
+/* conseil attendu : nmemb * size peut déborder */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

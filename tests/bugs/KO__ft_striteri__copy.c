@@ -1,4 +1,4 @@
-/* conseil attendu : l'ADRESSE du caractère */
+/* conseil attendu : que reçoit-elle en 2e argument */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

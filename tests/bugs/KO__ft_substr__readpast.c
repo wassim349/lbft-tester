@@ -1,4 +1,4 @@
-/* conseil attendu : tu ne dois pas lire s + start */
+/* conseil attendu : regarde ce que ta fonction lit */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

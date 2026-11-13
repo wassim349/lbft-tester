@@ -1,4 +1,4 @@
-/* conseil attendu : avec une taille 0, renvoie quand même un pointeur valide */
+/* conseil attendu : avec une taille 0, compare */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

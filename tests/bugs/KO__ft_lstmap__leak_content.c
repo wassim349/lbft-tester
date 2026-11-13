@@ -1,4 +1,4 @@
-/* conseil attendu : si un malloc échoue : del(contenu */
+/* conseil attendu : qu'est-ce qui est déjà alloué */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

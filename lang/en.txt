@@ -891,8 +891,8 @@ en: %s present
 fr: %s manquant
 en: %s missing
 
-fr: crée README.md : 1re ligne en italique, puis les sections Description, Instructions et Resources (voir le sujet).
-en: create README.md: 1st line in italics, then the Description, Instructions and Resources sections (see the subject).
+fr: il manque README.md : relis dans le sujet ce qu'il doit contenir.
+en: README.md is missing: reread in the subject what it must contain.
 
 fr: fichiers non autorisés à la racine (le sujet : Makefile, libft.h, ft_*.c, README.md) :
 en: files not allowed at the root (the subject: Makefile, libft.h, ft_*.c, README.md):
@@ -939,8 +939,8 @@ en: libft.h compiles on its own
 fr: libft.h ne compile pas tout seul :
 en: libft.h does not compile on its own:
 
-fr: size_t vient de <stddef.h> : ajoute #include <stddef.h> dans libft.h, avant les prototypes.
-en: size_t comes from <stddef.h>: add #include <stddef.h> in libft.h, before the prototypes.
+fr: libft.h utilise size_t : quel .h le définit, et libft.h l'inclut-il ?
+en: libft.h uses size_t: which .h defines it, and does libft.h include it?
 
 fr: protection contre la double inclusion (#ifndef)
 en: protection against double inclusion (#ifndef)
@@ -948,14 +948,17 @@ en: protection against double inclusion (#ifndef)
 fr: pas de protection #ifndef / #define dans libft.h
 en: no #ifndef / #define protection in libft.h
 
-fr: entoure tout libft.h de : #ifndef LIBFT_H / # define LIBFT_H / ... / #endif
-en: wrap all of libft.h in: #ifndef LIBFT_H / # define LIBFT_H / ... / #endif
+fr: libft.h doit être protégé contre la double inclusion : cherche « include guard ».
+en: libft.h must be protected against double inclusion: look up include guards.
 
 fr: structure t_list (content, next) définie
 en: t_list structure (content, next) defined
 
 fr: t_list absente ou incorrecte (il faut 'void *content' et 'struct s_list *next')
 en: t_list missing or wrong (it needs 'void *content' and 'struct s_list *next')
+
+fr: relis le sujet (partie bonus) : il donne la définition exacte de t_list.
+en: reread the subject (bonus part): it gives the exact definition of t_list.
 
 fr: fonctions non déclarées dans libft.h (%s) :
 en: functions not declared in libft.h (%s):
@@ -1023,8 +1026,8 @@ en: flag %s missing from at least one compilation
 fr: flags -Wall -Wextra -Werror partout
 en: flags -Wall -Wextra -Werror everywhere
 
-fr: mets CFLAGS = -Wall -Wextra -Werror et utilise $(CC) $(CFLAGS) dans la règle des .o.
-en: set CFLAGS = -Wall -Wextra -Werror and use $(CC) $(CFLAGS) in the .o rule.
+fr: chaque compilation de .c doit avoir ces trois flags : regarde la règle qui fabrique les .o.
+en: every .c compilation must have these three flags: look at the rule that builds the .o files.
 
 fr: le sujet impose 'cc' comme compilateur
 en: the subject requires 'cc' as the compiler
@@ -1038,8 +1041,8 @@ en: libft.a created at the root
 fr: relink : un 2e 'make' recompile alors que rien n'a changé
 en: relink: a 2nd 'make' recompiles although nothing changed
 
-fr: la règle $(NAME) doit dépendre des .o (pas être .PHONY, ni dépendre de all/clean) : $(NAME): $(OBJS)
-en: the $(NAME) rule must depend on the .o files (not be .PHONY, nor depend on all/clean): $(NAME): $(OBJS)
+fr: regarde de quoi dépend la règle $(NAME), et si elle est .PHONY.
+en: look at what the $(NAME) rule depends on, and whether it is .PHONY.
 
 fr: pas de relink
 en: no relink

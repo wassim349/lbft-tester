@@ -1,4 +1,4 @@
-/* conseil attendu : compare en unsigned char */
+/* conseil attendu : comment les octets sont comparés */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

@@ -1,4 +1,4 @@
-/* conseil attendu : alloue strlen(s) + 1 et mets le '\0' */
+/* conseil attendu : de combien d'octets le résultat a besoin */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

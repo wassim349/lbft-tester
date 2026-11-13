@@ -37,7 +37,7 @@ libftest --final      # avant de rendre
 - avec `--final` : que tout est commit et push, et les erreurs mémoire avec ASan
 
 Les problèmes sont triés par priorité : d'abord ce qui empêche de compiler, ensuite les crashs, puis les résultats faux, et la norme à la fin.
-Sous chaque erreur, un conseil 💡 explique la cause la plus probable et comment la corriger.
+Sous chaque erreur, un indice 💡 te dit où chercher (le cas qui coince, le `man` ou le sujet à relire), sans te donner la réponse : c'est à toi de trouver la correction.
 
 ## À savoir
 
@@ -51,12 +51,13 @@ Pour mettre à jour : `libftest --update`.
   Il tourne aussi à chaque push (GitHub Actions : Linux avec gcc et clang, Mac). `SELFTEST_SEEDS=50 make selftest` essaie plus de graines aléatoires.
 - Chaque fonction a au moins un fichier de bug dans `tests/bugs/` (`KO__ft_xxx__description.c`) : ajoutes-en un quand tu ajoutes un test.
 - `make i18n` vérifie que chaque texte a sa traduction.
-- Les conseils sont dans `scripts/hints.txt` : une règle par ligne, conseil en français puis en anglais (le format est expliqué en haut du fichier).
+- Les indices sont dans `scripts/hints.txt` : une règle par ligne, indice en français puis en anglais (le format est expliqué en haut du fichier).
+  Un indice dit où chercher, jamais la réponse : pas de code, pas de correction.
 - Les traductions sont dans `lang/en.txt` : le texte français sert de clé. Dans le code, un texte affiché passe par `msg '...'` (bash) ou par `TEST`/`t_fail`/`TR` (C).
 
 ## English
 
-A tester for the 42 libft. For each function it tells you whether it is right and, if not, why — with a 💡 tip under every error explaining the most likely cause and how to fix it.
+A tester for the 42 libft. For each function it tells you whether it is right and, if not, why — with a 💡 hint under every error telling you where to look, without giving you the answer.
 
 ```sh
 git clone https://github.com/wassim349/lbft-tester.git ~/libft-tester

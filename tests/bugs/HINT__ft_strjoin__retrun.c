@@ -1,4 +1,4 @@
-/* conseil attendu : faute de frappe : c'est return, pas retrun */
+/* conseil attendu : lettre par lettre */
 #include "libft.h"
 #include <stdlib.h>
 

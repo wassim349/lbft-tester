@@ -1,4 +1,4 @@
-/* conseil attendu : les tailles sont des size_t */
+/* conseil attendu : regarde le type des tailles */
 /* prototype de la piscine, sans inclure libft.h : les tests passent, mais c'est hors sujet */
 static unsigned int	len_of(char *s)
 {

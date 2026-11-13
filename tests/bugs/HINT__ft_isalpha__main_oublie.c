@@ -1,4 +1,4 @@
-/* conseil attendu : supprime le main */
+/* conseil attendu : il ne doit pas y en avoir dans le rendu */
 #include "libft.h"
 
 int	ft_isalpha(int c)

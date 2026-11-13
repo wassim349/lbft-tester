@@ -1,4 +1,4 @@
-/* conseil attendu : qu'au début et à la fin, jamais au milieu */
+/* conseil attendu : à quels endroits de s1 */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

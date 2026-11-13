@@ -1,4 +1,4 @@
-/* conseil attendu : c doit être converti en char */
+/* conseil attendu : en quoi c est converti */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

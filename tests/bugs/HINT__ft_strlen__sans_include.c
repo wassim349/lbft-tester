@@ -1,4 +1,4 @@
-/* conseil attendu : size_t et NULL viennent de <stddef.h> */
+/* conseil attendu : quel .h les définit */
 size_t	ft_strlen(const char *s)
 {
 	size_t	i;

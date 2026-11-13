@@ -1,4 +1,4 @@
-/* conseil attendu : Limite d'abord len à strlen(s + start) */
+/* conseil attendu : regarde ce que devient ta taille d'allocation */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

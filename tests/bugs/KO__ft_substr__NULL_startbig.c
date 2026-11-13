@@ -1,4 +1,4 @@
-/* conseil attendu : renvoie une chaîne vide allouée */
+/* conseil attendu : quand start est après la fin de s */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

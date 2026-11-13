@@ -1,4 +1,4 @@
-/* conseil attendu : les espaces à sauter sont */
+/* conseil attendu : quels caractères comptent comme des espaces */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

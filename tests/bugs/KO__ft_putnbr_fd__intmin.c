@@ -1,4 +1,4 @@
-/* conseil attendu : pour INT_MIN : écris */
+/* conseil attendu : pour INT_MIN */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

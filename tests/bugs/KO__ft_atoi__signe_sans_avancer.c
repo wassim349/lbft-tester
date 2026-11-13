@@ -1,4 +1,4 @@
-/* conseil attendu : après le '-' ou le '+' il faut avancer (i++) */
+/* conseil attendu : juste après le '-' ou le '+' */
 /* le signe est lu mais i n'avance pas : "-42" donne 0 */
 #include "libft.h"
 

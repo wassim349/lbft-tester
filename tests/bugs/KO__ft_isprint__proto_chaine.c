@@ -1,4 +1,4 @@
-/* conseil attendu : ces fonctions reçoivent UN caractère */
+/* conseil attendu : une chaîne ou un caractère */
 /* erreur classique : prototype d'un exercice de piscine, sans inclure libft.h */
 int	ft_isprint(char *str)
 {

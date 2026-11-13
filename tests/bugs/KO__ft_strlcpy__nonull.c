@@ -1,4 +1,4 @@
-/* conseil attendu : puis mets toujours un '\0' */
+/* conseil attendu : et le '\0' final */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

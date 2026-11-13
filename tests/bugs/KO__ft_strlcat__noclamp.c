@@ -1,4 +1,4 @@
-/* conseil attendu : strlcat renvoie strlen(src) + le plus petit */
+/* conseil attendu : ce que strlcat renvoie */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

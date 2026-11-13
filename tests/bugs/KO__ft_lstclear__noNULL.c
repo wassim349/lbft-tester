@@ -1,4 +1,4 @@
-/* conseil attendu : libère chaque maillon */
+/* conseil attendu : que doit valoir *lst à la fin */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

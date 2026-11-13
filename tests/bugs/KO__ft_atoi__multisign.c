@@ -1,4 +1,4 @@
-/* conseil attendu : un seul signe est accepté */
+/* conseil attendu : combien de signes sont acceptés */
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>

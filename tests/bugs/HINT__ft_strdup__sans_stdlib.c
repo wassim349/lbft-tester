@@ -1,4 +1,4 @@
-/* conseil attendu : malloc et free sont déclarées dans <stdlib.h> */
+/* conseil attendu : dans quel .h est-elle déclarée */
 #include "libft.h"
 
 char	*ft_strdup(const char *s)

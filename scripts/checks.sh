@@ -40,7 +40,7 @@ title "$(msg 'Fichiers du rendu')"
 for f in Makefile libft.h README.md; do
 	if [ -f "$f" ]; then ok "$(msg '%s présent' "$f")"; else ko "$(msg '%s manquant' "$f")"; fi
 done
-[ -f README.md ] || tip "$(msg 'crée README.md : 1re ligne en italique, puis les sections Description, Instructions et Resources (voir le sujet).')"
+[ -f README.md ] || tip "$(msg "il manque README.md : relis dans le sujet ce qu'il doit contenir.")"
 
 extra=""; artifacts=""
 for f in * .[!.]*; do
@@ -90,19 +90,19 @@ if [ -f libft.h ]; then
 		ok "$(msg 'libft.h compile tout seul')"
 	else
 		ko "$(msg 'libft.h ne compile pas tout seul :')"; indent < "$OUT/h.err"
-		grep -q 'size_t' "$OUT/h.err" && tip "$(msg 'size_t vient de <stddef.h> : ajoute #include <stddef.h> dans libft.h, avant les prototypes.')"
+		grep -q 'size_t' "$OUT/h.err" && tip "$(msg "libft.h utilise size_t : quel .h le définit, et libft.h l'inclut-il ?")"
 	fi
 	grep -Eq '#[[:space:]]*ifndef' libft.h && grep -Eq '#[[:space:]]*define' libft.h \
 		&& ok "$(msg 'protection contre la double inclusion (#ifndef)')" \
 		|| { ko "$(msg 'pas de protection #ifndef / #define dans libft.h')"
-			tip "$(msg 'entoure tout libft.h de : #ifndef LIBFT_H / # define LIBFT_H / ... / #endif')"; }
+			tip "$(msg 'libft.h doit être protégé contre la double inclusion : cherche « include guard ».')"; }
 	HAS_TLIST=0
 	if printf '#include "libft.h"\nint main(void){t_list l; l.content = 0; l.next = &l; return (l.next == 0);}\n' \
 		| cc -I. -x c - -o /dev/null 2>/dev/null; then
 		HAS_TLIST=1; ok "$(msg 'structure t_list (content, next) définie')"
 	else
 		ko "$(msg "t_list absente ou incorrecte (il faut 'void *content' et 'struct s_list *next')")"
-		tip "typedef struct s_list { void *content; struct s_list *next; } t_list;"
+		tip "$(msg 'relis le sujet (partie bonus) : il donne la définition exacte de t_list.')"
 	fi
 	missing_decl=""
 	while read -r fn; do
@@ -164,7 +164,7 @@ if [ -f Makefile ]; then
 			echo "$compile_lines" | grep -v -- "$flag" | grep -q . && { ko "$(msg "flag %s absent d'au moins une compilation" "$flag")"; bad=1; }
 		done
 		[ $bad = 0 ] && ok "$(msg 'flags -Wall -Wextra -Werror partout')"
-		[ $bad = 1 ] && tip "$(msg 'mets CFLAGS = -Wall -Wextra -Werror et utilise $(CC) $(CFLAGS) dans la règle des .o.')"
+		[ $bad = 1 ] && tip "$(msg 'chaque compilation de .c doit avoir ces trois flags : regarde la règle qui fabrique les .o.')"
 		echo "$compile_lines" | grep -Ev '^[[:space:]]*cc[[:space:]]' | grep -q . \
 			&& warn "$(msg "le sujet impose 'cc' comme compilateur")" || ok "$(msg 'compile avec cc')"
 	fi
@@ -175,7 +175,7 @@ if [ -f Makefile ]; then
 		if echo "$out" | grep -Eq '(^|[[:space:]])(cc|gcc|clang|ar)[[:space:]]'; then
 			ko "$(msg "relink : un 2e 'make' recompile alors que rien n'a changé")"
 			echo "$out" | indent 4
-			tip "$(msg 'la règle $(NAME) doit dépendre des .o (pas être .PHONY, ni dépendre de all/clean) : $(NAME): $(OBJS)')"
+			tip "$(msg 'regarde de quoi dépend la règle $(NAME), et si elle est .PHONY.')"
 		else
 			ok "$(msg 'pas de relink')"
 		fi
