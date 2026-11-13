@@ -48,6 +48,8 @@ Pour mettre à jour : `libftest --update`.
 ## Modifier le testeur
 
 - `make selftest` vérifie qu'il détecte toujours les bugs de `tests/bugs/` (et que le bon conseil s'affiche), en français et en anglais.
+  Il tourne aussi à chaque push (GitHub Actions : Linux avec gcc et clang, Mac). `SELFTEST_SEEDS=50 make selftest` essaie plus de graines aléatoires.
+- Chaque fonction a au moins un fichier de bug dans `tests/bugs/` (`KO__ft_xxx__description.c`) : ajoutes-en un quand tu ajoutes un test.
 - `make i18n` vérifie que chaque texte a sa traduction.
 - Les conseils sont dans `scripts/hints.txt` : une règle par ligne, conseil en français puis en anglais (le format est expliqué en haut du fichier).
 - Les traductions sont dans `lang/en.txt` : le texte français sert de clé. Dans le code, un texte affiché passe par `msg '...'` (bash) ou par `TEST`/`t_fail`/`TR` (C).

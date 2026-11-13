@@ -106,7 +106,7 @@ if [ -f libft.h ]; then
 	fi
 	missing_decl=""
 	while read -r fn; do
-		grep -Eq "[^a-z_]$fn[[:space:]]*\(" libft.h || missing_decl="$missing_decl $fn"
+		grep -Eq "[^a-z_]${fn}[[:space:]]*\(" libft.h || missing_decl="$missing_decl $fn"
 	done < "$FUNCS"
 	if [ -n "$missing_decl" ]; then
 		ko "$(msg 'fonctions non déclarées dans libft.h (%s) :' "$(echo $missing_decl | wc -w | tr -d ' ')")"
@@ -120,7 +120,7 @@ if [ -f libft.h ]; then
 	for fn in $conflicts; do
 		ko "$(msg 'prototype de %s différent du sujet :' "$fn")"
 		info "$(msg 'sujet   :') $(grep -E "[^a-z_]$fn\(" "$HERE/protos.c" | tr -s ' \t' ' ')"
-		info "$(msg 'le tien :') $(grep -oE "[^;]*[^a-z_]$fn[[:space:]]*\([^;]*;" libft.h | head -1 | sed 's/^[[:space:]]*//' | tr -s ' \t' ' ')"
+		info "$(msg 'le tien :') $(grep -oE "[^;]*[^a-z_]${fn}[[:space:]]*\([^;]*;" libft.h | head -1 | sed 's/^[[:space:]]*//' | tr -s ' \t' ' ')"
 		[ "$fn" = ft_lstsize ] && info "$(msg "(le sujet v19.3 demande 'unsigned int', les anciennes versions 'int')")"
 	done
 	[ -z "$conflicts" ] && ok "$(msg 'les prototypes déclarés correspondent au sujet v19.3')"
@@ -134,7 +134,7 @@ title "Makefile"
 if [ -f Makefile ]; then
 	for r in '\$\(NAME\)' all clean fclean re; do
 		name="$(echo "$r" | tr -d '\\')"
-		grep -Eq "^$r[[:space:]]*:" Makefile && ok "$(msg 'règle %s' "$name")" || ko "$(msg 'règle %s manquante dans le Makefile' "$name")"
+		grep -Eq "^${r}[[:space:]]*:" Makefile && ok "$(msg 'règle %s' "$name")" || ko "$(msg 'règle %s manquante dans le Makefile' "$name")"
 	done
 	grep -Eq '^NAME[[:space:]]*:?=[[:space:]]*libft\.a' Makefile && ok "NAME = libft.a" || ko "$(msg 'NAME = libft.a introuvable dans le Makefile')"
 	grep -q libtool Makefile && ko "$(msg 'libtool est interdit (utilise ar)')"

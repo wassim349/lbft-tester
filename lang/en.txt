@@ -649,6 +649,9 @@ en: no terminal for the menu: libftest --lang en (or fr)
 fr: langue inconnue : %s (fr ou en)
 en: unknown language: %s (en or fr)
 
+fr: une nouvelle version du testeur est disponible : libftest --update
+en: a new version of the tester is available: libftest --update
+
 fr: testeur à jour
 en: tester up to date
 

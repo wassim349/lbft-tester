@@ -297,6 +297,20 @@ TESTER_CHECK_KO="$CHECK_KO" TESTER_VERBOSE=$VERBOSE TESTER_STATE="$BUILD/state.t
 SUM_RC=$?
 
 # ------------------------------------------------- 5. verdict
+# nouvelle version du testeur ? Un "git fetch" par jour au plus, en arriere-plan (on n'attend
+# jamais le reseau) : l'avis s'affiche au lancement suivant. Seulement dans un terminal
+# (ou avec LIBFTEST_UPDATE_CHECK=1).
+if { [ -t 1 ] || [ -n "${LIBFTEST_UPDATE_CHECK:-}" ]; } && [ -d "$HERE/.git" ]; then
+	stamp="$LIBFTEST_CONF/last_fetch"
+	if [ -z "$(find "$stamp" -mtime -1 2>/dev/null)" ] && mkdir -p "$LIBFTEST_CONF" 2>/dev/null && touch "$stamp" 2>/dev/null; then
+		( GIT_TERMINAL_PROMPT=0 GIT_SSH_COMMAND='ssh -oBatchMode=yes' git -C "$HERE" fetch -q </dev/null >/dev/null 2>&1 & )
+	fi
+	behind="$(git -C "$HERE" rev-list --count 'HEAD..@{u}' 2>/dev/null)"
+	if [ "${behind:-0}" -gt 0 ]; then
+		echo
+		echo "   ${YEL}↑ $(msg 'une nouvelle version du testeur est disponible : libftest --update')${RST}"
+	fi
+fi
 echo
 if [ $SUM_RC = 0 ] && [ $TEST_RC = 0 ] && { [ "$CHECK_KO" = 0 ] || [ "$CHECK_KO" = "-" ]; } && [ $GIT_KO = 0 ]; then
 	if [ $FINAL = 1 ]; then

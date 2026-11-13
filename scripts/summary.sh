@@ -156,7 +156,7 @@ for i in "${!FUNCS[@]}"; do
 		if ! echo " $defs" | grep -q " $fn "; then
 			hkey="ne contient pas la fonction"
 			d+="     ${RED}✘ $(msg '%s ne contient pas la fonction %s' "$(show_path "$file")" "$fn")${RST} ${DIM}$(msg '(il définit : %s)' "${defs:-$(msg 'rien')}")${RST}"$'\n'
-		elif ! grep -Eq "[^a-z_]$fn[[:space:]]*\(" "$LIBFT/libft.h" 2>/dev/null; then
+		elif ! grep -Eq "[^a-z_]${fn}[[:space:]]*\(" "$LIBFT/libft.h" 2>/dev/null; then
 			hkey="n'est pas declaree dans libft.h"
 			d+="     ${RED}✘ $(msg "%s n'est pas déclarée dans libft.h" "$fn")${RST}"$'\n'
 		else

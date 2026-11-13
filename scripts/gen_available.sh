@@ -12,7 +12,7 @@ defined="$(nm -g "$LIB" 2>/dev/null | awk '$2=="T"{print $3}' | sed 's/^_//' | s
 	echo "/* genere automatiquement par gen_available.sh */"
 	while read -r fn; do
 		echo "$defined" | grep -qx "$fn" || continue
-		grep -Eq "[^a-z_]$fn[[:space:]]*\(" "$LIBFT/libft.h" 2>/dev/null || continue
+		grep -Eq "[^a-z_]${fn}[[:space:]]*\(" "$LIBFT/libft.h" 2>/dev/null || continue
 		echo "#define HAS_$fn 1"
 	done < "$HERE/functions.txt"
 } > "$OUT.tmp"

@@ -59,7 +59,7 @@ compile_one() {
 		| grep -qE "^[^:]*$base\.c:[0-9]+:[0-9]+: error: conflicting types for .$base."; }
 	conflict || return
 	kind=type; conflict -Dconst= || kind=const
-	def="$(grep -m1 -E "^[a-zA-Z_].*[^a-zA-Z0-9_]$base[[:space:]]*\(" "$src" | tr -s ' \t' ' ')"
+	def="$(grep -m1 -E "^[a-zA-Z_].*[^a-zA-Z0-9_]${base}[[:space:]]*\(" "$src" | tr -s ' \t' ' ')"
 	printf '%s\t%s\t%s\n' "$base" "$kind" "$def" > "$OUT/cerr/$base.proto"
 }
 export -f compile_one
